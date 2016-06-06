@@ -216,4 +216,12 @@ public class GameWorld {
     public List<Surface> getGameWorld() {
         return gameWorld;
     }
+
+    public boolean containsPoint(Point p){
+        for(Surface item:gameWorld){
+            if(item.contains(p))
+                return true;
+        }
+        return false;
+    }
 }
