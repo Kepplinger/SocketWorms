@@ -21,4 +21,11 @@ public class Point {
         return yCoord;
     }
 
+    public void setxCoord(int xCoord) {
+        this.xCoord = xCoord;
+    }
+
+    public void setyCoord(int yCoord) {
+        this.yCoord = yCoord;
+    }
 }
