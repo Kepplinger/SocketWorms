@@ -71,11 +71,11 @@ public class Controller implements Initializable {
 //            } else
 //                gc.setStroke(Color.RED);
             gc.setFill(Color.GREEN);
-            gc.fillPolygon(gameWorld.getGameWorld().get(i).getxCoords(), gameWorld.getGameWorld().get(i).getyCoords(), gameWorld.getGameWorld().get(i).getxCoords().length);
+            gc.strokePolygon(gameWorld.getGameWorld().get(i).getxCoords(), gameWorld.getGameWorld().get(i).getyCoords(), gameWorld.getGameWorld().get(i).getxCoords().length);
         }
 
         gc.setStroke(Color.BLACK);
-        gc.setLineWidth(1);
-        gc.strokeRect(0, 0, canvas.getWidth(), canvas.getHeight());
+        gc.setLineWidth(10);
+        //gc.strokeRect(0, 0, canvas.getWidth(), canvas.getHeight());
     }
 }

@@ -47,6 +47,11 @@ public class GameWorld {
         int waveLength; // Länge der Änderung
         int waveHeight; // Höhe der Änderung
 
+        for (int i = height; i >= height-relativHeight; i--)
+        {
+            generatedWorld.add(new Point(0,i));
+        }
+
         while (remainingHorizontal > 0) {
             direction = random.nextInt((relativHeight - 20) * 2) - 190;     // Wenn direction negativ ist kommt eine Berg, wenn es positiv ist ein Tal
             waveLength = Math.max(random.nextInt(averageWaveLength) + averageWaveLength / 2, MINVARIATIONYWIDTH);   // Ermittelt die Länge der Änderung
@@ -74,6 +79,12 @@ public class GameWorld {
                 }
                 relativHeight -= waveHeight;
             }
+        }
+        for (int i = 576; i > 576-relativHeight; i--) {
+            generatedWorld.add(new Point(1024,i));
+        }
+        for (int i = width; i >= 0; i--) {
+            generatedWorld.add(new Point(i,567));
         }
 
         generatedWorld.add(new Point(width, height));
