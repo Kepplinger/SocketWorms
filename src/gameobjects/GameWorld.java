@@ -47,9 +47,9 @@ public class GameWorld {
         int waveLength; // Länge der Änderung
         int waveHeight; // Höhe der Änderung
 
-        for (int i = height; i >= height-relativHeight; i--)
-        {
-            generatedWorld.add(new Point(0,i));
+        //Alle Punkte auf der linken Seite der Welt werden hinzugefügt
+        for (int i = height; i >= height - relativHeight; i--) {
+            generatedWorld.add(new Point(0, i));
         }
 
         while (remainingHorizontal > 0) {
@@ -80,14 +80,17 @@ public class GameWorld {
                 relativHeight -= waveHeight;
             }
         }
-        for (int i = 576; i > 576-relativHeight; i--) {
-            generatedWorld.add(new Point(1024,i));
-        }
-        for (int i = width; i >= 0; i--) {
-            generatedWorld.add(new Point(i,567));
+
+        //Alle Punkte auf der rechten Seite der Welt werden hinzugefügt
+        for (int i = height; i > height - relativHeight; i--) {
+            generatedWorld.add(new Point(width, i));
         }
 
-        generatedWorld.add(new Point(width, height));
+        //Alle Punkte auf der Unterseite der Welt werden hinzugefügt
+        for (int i = width; i >= 0; i--) {
+            generatedWorld.add(new Point(i, height));
+        }
+
         gameWorld.add(new Surface(generatedWorld));
     }
 
@@ -228,9 +231,9 @@ public class GameWorld {
         return gameWorld;
     }
 
-    public boolean containsPoint(Point p){
-        for(Surface item:gameWorld){
-            if(item.contains(p))
+    public boolean containsPoint(Point p) {
+        for (Surface item : gameWorld) {
+            if (item.contains(p))
                 return true;
         }
         return false;

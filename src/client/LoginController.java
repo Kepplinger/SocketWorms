@@ -36,7 +36,7 @@ public class LoginController implements Initializable{
         Stage stage = new Stage();
         Parent root = null;
         try {
-            root = FXMLLoader.load(getClass().getResource("Gamefield.fxml"));
+            root = FXMLLoader.load(getClass().getResource("view/Gamefield.fxml"));
             stage.setTitle("WORMS - "+tf_serverip.getText());
             stage.setScene(new Scene(root));
             stage.centerOnScreen();

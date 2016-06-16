@@ -33,7 +33,7 @@
                <graphic>
                   <ImageView>
                      <image>
-                        <Image url="@../images/power.png" />
+                        <Image url="@../../images/power.png" />
                      </image>
                   </ImageView>
                </graphic>

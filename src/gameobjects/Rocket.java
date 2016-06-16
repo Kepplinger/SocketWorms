@@ -20,48 +20,62 @@ public class Rocket {
         this.angle = angle;
     }
 
-    public Point drawFlightPath(GraphicsContext gc, GameWorld world) {
-        double GRAVITATIONAL_CONSTANT = 9.81;
-        int x = start.getxCoord();
-        int y = start.getyCoord();
+    public Point calculateFlightPath(GraphicsContext gc, GameWorld world) {
 
+        double GRAVITATIONAL_CONSTANT = 9.81;
+        int initialX = start.getxCoord();
+        int initialY = start.getyCoord();
+
+        double currentX;
+        double currentY;
+
+        int finalX;
+        int finalY;
 
         double xSpeed = Math.cos(Math.toRadians(angle)) * initSpeed;
         double ySpeed = Math.sin(Math.toRadians(angle)) * initSpeed;
-        List<Integer> xList = new LinkedList<>();
-        List<Integer> yList = new LinkedList<>();
+        List<Point> points = new LinkedList<>();
 
-        xList.add(x);
-        yList.add(y);
+        while (initialY <= 576) {
 
-        Point b = null;
+            points.add(new Point(initialX, initialY));
 
-        int cnt = 1;
-        while (y <= 576) {
-            x = (int) Math.round((double) x + xSpeed);
             ySpeed = (ySpeed - GRAVITATIONAL_CONSTANT);
-            y -= ySpeed;
-            xList.add(x);
-            yList.add(y);
-            cnt++;
-            if (world.containsPoint(new Point(x, y))) {
-                b = new Point(x,y);
-                break;
+            finalX = (int) Math.round((double) initialX + xSpeed);
+            finalY = (int) (initialY - ySpeed);
+
+            if (world.containsPoint(new Point(finalX, finalY))) {
+
+                currentX = initialX;
+                currentY = initialY;
+
+                do {
+                    currentX = currentX + (finalX - initialX) / initSpeed * 5;
+                    currentY = currentY + (finalY - initialY) / initSpeed * 5;
+
+                    if (world.containsPoint(new Point((int) currentX, (int) currentY))) {
+                        points.add(new Point((int) currentX, (int) currentY));
+                        return drawFlightPath(points, gc);
+                    }
+
+                } while (Math.round(currentX) != finalX && Math.round(currentY) != finalY);
             }
+
+            initialX = finalX;
+            initialY = finalY;
         }
 
-        int u = 0;
+        return drawFlightPath(points, gc);
+    }
 
-        double[] xPoints = new double[cnt];
-        double[] yPoints = new double[cnt];
-        for (int i = 0; i < cnt; i++) {
-            xPoints[i] = xList.get(i);
-            yPoints[i] = yList.get(i);
-            if(b.getxCoord() == xList.get(i) && b.getxCoord() == xList.get(i)){
-                System.out.println(cnt-i-1);
-            }
+    private Point drawFlightPath(List<Point> points, GraphicsContext gc) {
+        double[] xPoints = new double[points.size()];
+        double[] yPoints = new double[points.size()];
+        for (int i = 0; i < points.size(); i++) {
+            xPoints[i] = points.get(i).getxCoord();
+            yPoints[i] = points.get(i).getyCoord();
         }
-        gc.strokePolyline(xPoints, yPoints, cnt);
-        return new Point((int) xPoints[cnt - 1], (int) yPoints[cnt - 1]);
+        gc.strokePolyline(xPoints, yPoints, points.size());
+        return new Point((int) xPoints[points.size() - 1], (int) yPoints[points.size() - 1]);
     }
 }

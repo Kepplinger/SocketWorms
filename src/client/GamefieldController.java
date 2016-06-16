@@ -4,7 +4,6 @@ import gameobjects.Explosion;
 import gameobjects.Point;
 import gameobjects.Rocket;
 import gameobjects.Surface;
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.canvas.Canvas;
@@ -13,7 +12,6 @@ import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Line;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -125,7 +123,7 @@ public class GamefieldController implements Initializable {
         gc.setLineWidth(2);
         //gc.setLineDashes(25d, 10d);
 
-        mouse = new Rocket(model.getLocalPlayer().getPosition(), speed, angle).drawFlightPath(gc,model.getWorld());
+        mouse = new Rocket(model.getLocalPlayer().getPosition(), speed, angle).calculateFlightPath(gc,model.getWorld());
     }
 
     private void drawPlayers() {
