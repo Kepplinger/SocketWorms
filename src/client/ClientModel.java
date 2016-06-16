@@ -27,7 +27,7 @@ public class ClientModel extends Observable {
         refreshTimer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-
+                localPlayer.applyPhysics(world);
             }
         },100,10);
         world = new GameWorld(1024,576);

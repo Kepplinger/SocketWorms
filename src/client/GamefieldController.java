@@ -41,21 +41,22 @@ public class GamefieldController implements Initializable {
         model = ClientModel.getInstance();
         gc = canvas.getGraphicsContext2D();
         hudgc = cv_hud.getGraphicsContext2D();
-        canvas.setOnMouseMoved((event -> {
-            drawBackground();
-            drawPlayers();
-            drawRockets();
-            drawForground();
-        }));
+
         pane.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.SPACE) {
                 currentSpeed = currentSpeed >= 1 ? 0 : currentSpeed + 0.01;
             }
-            if (event.getCode() == KeyCode.LEFT) {
+            if (event.getCode() == KeyCode.UP) {
                 angle = angle <= -180 ? 0 : angle >= 180 ? -179 : angle + 1;
             }
-            if (event.getCode() == KeyCode.RIGHT) {
+            if (event.getCode() == KeyCode.DOWN) {
                 angle = angle <= -179 ? 180 : angle == 0 ? -1 : angle - 1;
+            }
+            if (event.getCode() == KeyCode.LEFT){
+                model.getLocalPlayer().movePlayer(-1);
+            }
+            if (event.getCode() == KeyCode.RIGHT){
+                model.getLocalPlayer().movePlayer(1);
             }
             if(event.getCode() == KeyCode.ENTER){
                 Explosion explosion = new Explosion(new Point((int) mouse.getxCoord(), (int) mouse.getyCoord()));
@@ -83,7 +84,7 @@ public class GamefieldController implements Initializable {
         drawPlayers();
         drawRockets();
 
-        Timer timer = new Timer();
+        Timer timer = new Timer(true);
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
@@ -105,6 +106,11 @@ public class GamefieldController implements Initializable {
                         model.getLocalPlayer().getPosition().getyCoord()), 400, 15);
                 hudgc.setStroke(Color.ORANGE);
                 hudgc.strokeText(String.format("Winkel: %.2f", angle), 200, 35);
+
+                drawBackground();
+                drawPlayers();
+                drawRockets();
+                drawForground();
             }
         }, 100, 50);
     }
