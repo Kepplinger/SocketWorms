@@ -23,13 +23,6 @@ public class ClientModel extends Observable {
 
     private ClientModel(){
         otherPlayers = new LinkedList<>();
-        Timer refreshTimer = new Timer(true);
-        refreshTimer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                localPlayer.applyPhysics(world);
-            }
-        },100,10);
         world = new GameWorld(1024,576);
     }
 
@@ -68,5 +61,9 @@ public class ClientModel extends Observable {
 
     public GameWorld getWorld() {
         return world;
+    }
+
+    public void applyPhysics(){
+        localPlayer.applyPhysics(world);
     }
 }

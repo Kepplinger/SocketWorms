@@ -25,16 +25,22 @@ public class Player implements Serializable {
     }
 
     public void applyPhysics(GameWorld gameWorld) {
-        if (!gameWorld.containsPoint(position)) {
-            position.setyCoord(position.getyCoord() + 1);
+        if (getDistance(gameWorld.getNearestPoint(position),position) > 3) {
+            position.setyCoord(position.getyCoord() + 5);
         }
+
         if (gameWorld.containsPoint(position)){
-            //TODO überarbeiten!!!
-            position = gameWorld.getGameWorld().get(0).getBorder().get(gameWorld.getGameWorld().get(0).getIndexofNearestPoint(position));
+            Point point = gameWorld.getNearestPoint(position);
+            point.setyCoord(point.getyCoord() - 2);
+            position = point;
         }
     }
 
     public void movePlayer(int value){
         position.setxCoord(position.getxCoord() + value);
+    }
+
+    private double getDistance(Point point1, Point point2) {
+        return Math.sqrt(Math.pow(Math.abs(point1.getxCoord() - point2.getxCoord()), 2) + Math.pow(Math.abs(point1.getyCoord() - point2.getyCoord()), 2));
     }
 }

@@ -232,10 +232,31 @@ public class GameWorld {
     }
 
     public boolean containsPoint(Point p) {
-        for (Surface item : gameWorld) {
-            if (item.contains(p))
+        for (Surface surface : gameWorld) {
+            if (surface.contains(p))
                 return true;
         }
         return false;
+    }
+
+    public Point getNearestPoint(Point p) {
+
+        Point nearestPoint = null;
+        Point currentPoint;
+
+        for (Surface surface : gameWorld) {
+            currentPoint = surface.getBorder().get(surface.getIndexofNearestPoint(p));
+
+            if (nearestPoint == null || getDistance(p, nearestPoint) > getDistance(p, currentPoint))
+                nearestPoint = currentPoint;
+        }
+        if (nearestPoint == null)
+            return p;
+        else
+            return new Point(nearestPoint.getxCoord(),nearestPoint.getyCoord());
+    }
+
+    private double getDistance(Point point1, Point point2) {
+        return Math.sqrt(Math.pow(Math.abs(point1.getxCoord() - point2.getxCoord()), 2) + Math.pow(Math.abs(point1.getyCoord() - point2.getyCoord()), 2));
     }
 }

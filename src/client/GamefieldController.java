@@ -4,6 +4,7 @@ import gameobjects.Explosion;
 import gameobjects.Point;
 import gameobjects.Rocket;
 import gameobjects.Surface;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.canvas.Canvas;
@@ -22,10 +23,14 @@ import java.util.TimerTask;
  * Created by Andreas on 24.05.2016.
  */
 public class GamefieldController implements Initializable {
-    public AnchorPane pane;
-    public Canvas cv_hud;
+
     @FXML
     private Canvas canvas;
+    @FXML
+    public Canvas cv_hud;
+    @FXML
+    public AnchorPane pane;
+
     private GraphicsContext gc;
     private GraphicsContext hudgc;
 
@@ -52,13 +57,13 @@ public class GamefieldController implements Initializable {
             if (event.getCode() == KeyCode.DOWN) {
                 angle = angle <= -179 ? 180 : angle == 0 ? -1 : angle - 1;
             }
-            if (event.getCode() == KeyCode.LEFT){
-                model.getLocalPlayer().movePlayer(-1);
+            if (event.getCode() == KeyCode.LEFT) {
+                model.getLocalPlayer().movePlayer(-2);
             }
-            if (event.getCode() == KeyCode.RIGHT){
-                model.getLocalPlayer().movePlayer(1);
+            if (event.getCode() == KeyCode.RIGHT) {
+                model.getLocalPlayer().movePlayer(2);
             }
-            if(event.getCode() == KeyCode.ENTER){
+            if (event.getCode() == KeyCode.ENTER) {
                 Explosion explosion = new Explosion(new Point((int) mouse.getxCoord(), (int) mouse.getyCoord()));
                 model.getWorld().destroySurface(explosion);
 
@@ -88,29 +93,32 @@ public class GamefieldController implements Initializable {
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                hudgc.drawImage(new Image("/images/hud_background.png"), 0, 0, 1024, 50);
+                Platform.runLater(() -> {
+                    hudgc.drawImage(new Image("/images/hud_background.png"), 0, 0, 1024, 50);
 
-                hudgc.setFill(Color.DARKGRAY);
-                hudgc.fillRoundRect(10, 10, 104, 24, 5, 5);
-                hudgc.setStroke(Color.BLACK);
-                hudgc.strokeRoundRect(10, 10, 104, 24, 5, 5);
+                    hudgc.setFill(Color.DARKGRAY);
+                    hudgc.fillRoundRect(10, 10, 104, 24, 5, 5);
+                    hudgc.setStroke(Color.BLACK);
+                    hudgc.strokeRoundRect(10, 10, 104, 24, 5, 5);
 
-                hudgc.setFill(Color.DARKRED);
-                hudgc.fillRoundRect(12, 12, currentSpeed * 100, 20, 5, 5);
-                hudgc.setStroke(Color.WHITE);
-                hudgc.strokeText(String.format("%d%%", (int) (currentSpeed * 100)), 49, 26);
+                    hudgc.setFill(Color.DARKRED);
+                    hudgc.fillRoundRect(12, 12, currentSpeed * 100, 20, 5, 5);
+                    hudgc.setStroke(Color.WHITE);
+                    hudgc.strokeText(String.format("%d%%", (int) (currentSpeed * 100)), 49, 26);
 
-                hudgc.setStroke(Color.WHITE);
-                hudgc.strokeText(String.format("Mouse: X: %d Y: %d", mouse.getxCoord(), mouse.getyCoord()), 200, 15);
-                hudgc.strokeText(String.format("Player: X: %d Y: %d", model.getLocalPlayer().getPosition().getxCoord(),
-                        model.getLocalPlayer().getPosition().getyCoord()), 400, 15);
-                hudgc.setStroke(Color.ORANGE);
-                hudgc.strokeText(String.format("Winkel: %.2f", angle), 200, 35);
+                    hudgc.setStroke(Color.WHITE);
+                    hudgc.strokeText(String.format("Mouse: X: %d Y: %d", mouse.getxCoord(), mouse.getyCoord()), 200, 15);
+                    hudgc.strokeText(String.format("Player: X: %d Y: %d", model.getLocalPlayer().getPosition().getxCoord(),
+                            model.getLocalPlayer().getPosition().getyCoord()), 400, 15);
+                    hudgc.setStroke(Color.ORANGE);
+                    hudgc.strokeText(String.format("Winkel: %.2f", angle), 200, 35);
 
-                drawBackground();
-                drawPlayers();
-                drawRockets();
-                drawForground();
+                    drawBackground();
+                    drawPlayers();
+                    drawRockets();
+                    drawForground();
+                });
+                model.applyPhysics();
             }
         }, 100, 50);
     }
@@ -129,7 +137,7 @@ public class GamefieldController implements Initializable {
         gc.setLineWidth(2);
         //gc.setLineDashes(25d, 10d);
 
-        mouse = new Rocket(model.getLocalPlayer().getPosition(), speed, angle).calculateFlightPath(gc,model.getWorld());
+        mouse = new Rocket(model.getLocalPlayer().getPosition(), speed, angle).calculateFlightPath(gc, model.getWorld());
     }
 
     private void drawPlayers() {
