@@ -10,8 +10,10 @@ import java.util.List;
 public class Explosion {
 
     Point[] border;
+    Point center;
 
     public Explosion(Point point) {
+        center = point;
         border = new Point[GameWorld.EXPLOSIONPOINTS];
         determineBorder(point);
     }
@@ -60,6 +62,17 @@ public class Explosion {
         return index;
     }
 
+    private boolean containsPlayer(Player p){
+        return true;
+    }
+
+    public void calculateDamage(List<Player> players){
+        for(Player p:players){
+            if(contains(p.getPosition())){
+                p.setHealth((int) (GameWorld.EXPLOSIONRADIUS-getDistance(p.getPosition(),center)));
+            }
+        }
+    }
     private double getDistance(Point point1, Point point2) {
         return Math.sqrt(Math.pow(Math.abs(point1.getxCoord() - point2.getxCoord()), 2) + Math.pow(Math.abs(point1.getyCoord() - point2.getyCoord()), 2));
     }

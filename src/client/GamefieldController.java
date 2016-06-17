@@ -1,9 +1,6 @@
 package client;
 
-import gameobjects.Explosion;
-import gameobjects.Point;
-import gameobjects.Rocket;
-import gameobjects.Surface;
+import gameobjects.*;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -13,6 +10,7 @@ import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -24,6 +22,8 @@ import java.util.TimerTask;
  */
 public class GamefieldController implements Initializable {
 
+    @FXML
+    public Canvas canvas_gamefield;
     @FXML
     private Canvas canvas;
     @FXML
@@ -63,8 +63,19 @@ public class GamefieldController implements Initializable {
             if (event.getCode() == KeyCode.RIGHT) {
                 model.getLocalPlayer().movePlayer(2);
             }
+
+            drawBackground();
+            drawPlayers();
+            drawRockets();
+            drawForground();
+        });
+        pane.setOnKeyReleased(event -> {
             if (event.getCode() == KeyCode.ENTER) {
-                Explosion explosion = new Explosion(new Point((int) mouse.getxCoord(), (int) mouse.getyCoord()));
+                double speed = currentSpeed * 90;
+                Point destination = new Rocket(model.getLocalPlayer().getPosition(), speed, angle).calculateFlightPath(gc, model.getWorld());
+                Explosion explosion = new Explosion(new Point((int) destination.getxCoord(), (int) destination.getyCoord()));
+                explosion.calculateDamage(model.getPlayers());
+
                 model.getWorld().destroySurface(explosion);
 
                 double[] xCoord = new double[explosion.getBorder().length];
@@ -83,7 +94,6 @@ public class GamefieldController implements Initializable {
             drawPlayers();
             drawRockets();
             drawForground();
-            drawPreShoot();
         });
         drawBackground();
         drawPlayers();
@@ -94,6 +104,7 @@ public class GamefieldController implements Initializable {
             @Override
             public void run() {
                 Platform.runLater(() -> {
+                    hudgc.setFont(new Font("System",14));
                     hudgc.drawImage(new Image("/images/hud_background.png"), 0, 0, 1024, 50);
 
                     hudgc.setFill(Color.DARKGRAY);
@@ -112,6 +123,9 @@ public class GamefieldController implements Initializable {
                             model.getLocalPlayer().getPosition().getyCoord()), 400, 15);
                     hudgc.setStroke(Color.ORANGE);
                     hudgc.strokeText(String.format("Winkel: %.2f", angle), 200, 35);
+                    hudgc.setFill(Color.RED);
+                    hudgc.setFont(new Font("System",24));
+                    hudgc.fillText(String.format("♥ %d", model.getLocalPlayer().getHealth()), 930, 35);
 
                     drawBackground();
                     drawPlayers();
@@ -120,7 +134,7 @@ public class GamefieldController implements Initializable {
                 });
                 model.applyPhysics();
             }
-        }, 100, 50);
+        }, 100, 10);
     }
 
     private void drawRockets() {
@@ -129,54 +143,77 @@ public class GamefieldController implements Initializable {
         }*/
     }
 
-    private void drawPreShoot() {
-        double x = model.getLocalPlayer().getPosition().getxCoord();
-        double y = model.getLocalPlayer().getPosition().getyCoord();
-        double speed = currentSpeed * 90;
-        gc.setStroke(Color.RED);
-        gc.setLineWidth(2);
-        //gc.setLineDashes(25d, 10d);
-
-        mouse = new Rocket(model.getLocalPlayer().getPosition(), speed, angle).calculateFlightPath(gc, model.getWorld());
-    }
-
     private void drawPlayers() {
         if (model != null) {
-            int x = model.getLocalPlayer().getPosition().getxCoord();
-            int y = model.getLocalPlayer().getPosition().getyCoord();
+            for(Player p:model.getPlayers()){
+                int x = p.getPosition().getxCoord();
+                int y = p.getPosition().getyCoord();
 
-            gc.drawImage(new Image("/images/worm.png"), x - 4, y - 16, 8, 16);
+                gc.drawImage(new Image("/images/worm.png"), x - 4, y - 16, 8, 16);
+            }
         }
 
     }
 
     private void drawBackground() {
-        gc.drawImage(new Image("/images/background.png"), 0, 0, 1024, 576);
+        if (ClientModel.getInstance().getWorld().isWorldChanged()) {
+            ClientModel.getInstance().getWorld().setWorldChanged();
+            GraphicsContext gcgf = canvas_gamefield.getGraphicsContext2D();
+            gcgf.clearRect(0, 0, canvas_gamefield.getWidth(), canvas_gamefield.getHeight());
+            for (Surface surface : ClientModel.getInstance().getWorld().getGameWorld()) {
+                gcgf.setFill(Color.GREEN);
+                gcgf.strokePolygon(surface.getxCoords(), surface.getyCoords(), surface.getxCoords().length);
+            }
 
-        for (Surface surface : ClientModel.getInstance().getWorld().getGameWorld()) {
-            gc.setFill(Color.GREEN);
-            gc.strokePolygon(surface.getxCoords(), surface.getyCoords(), surface.getxCoords().length);
+
+            for (int i = 0; i < ClientModel.getInstance().getWorld().getGameWorld().size(); i++) {
+                gcgf.setFill(Color.DARKGRAY);
+                gcgf.fillPolygon(ClientModel.getInstance().getWorld().getGameWorld().get(i).getxCoords(),
+                        ClientModel.getInstance().getWorld().getGameWorld().get(i).getyCoords(),
+                        ClientModel.getInstance().getWorld().getGameWorld().get(i).getxCoords().length);
+            }
         }
-
-
-        for (int i = 0; i < ClientModel.getInstance().getWorld().getGameWorld().size(); i++) {
-            gc.setFill(Color.DARKGRAY);
-            gc.fillPolygon(ClientModel.getInstance().getWorld().getGameWorld().get(i).getxCoords(),
-                    ClientModel.getInstance().getWorld().getGameWorld().get(i).getyCoords(),
-                    ClientModel.getInstance().getWorld().getGameWorld().get(i).getxCoords().length);
-        }
+        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
     }
 
     private void drawForground() {
 
 
         //Targetmarker
-        gc.drawImage(new Image("/images/crossfade.png"), mouse.getxCoord() - 11, mouse.getyCoord() - 11, 21, 21);
+        int x = model.getLocalPlayer().getPosition().getxCoord();
+        int y = model.getLocalPlayer().getPosition().getyCoord();
+
+        double angle360 = 0;
+        double a = 0;
+        double b = 0;
+
+        if (angle > 0) {
+            angle360 = angle;
+            a = Math.sin(Math.toRadians(angle)) * 50;
+            b = Math.cos(Math.toRadians(angle)) * 50;
+        } else if (angle < 0) {
+            angle360 = (180 - (angle * -1)) + 180;
+            a = Math.sin(Math.toRadians(angle360)) * 50;
+            b = Math.cos(Math.toRadians(angle360)) * 50;
+        }
+        gc.setFill(Color.BLACK);
+        gc.fillOval(x + b-4,y - a-4,  8, 8);
+        gc.setFill(Color.GOLD);
+        gc.fillOval(x + b-3,y - a-3,  6, 6);
+        //gc.drawImage(new Image("/images/crossfade.png"), mouse.getxCoord() - 11, mouse.getyCoord() - 11, 21, 21);
 
         //Localplayersign
         gc.drawImage(new Image("/images/local_arrow.png"), model.getLocalPlayer().getPosition().getxCoord() - 6,
                 model.getLocalPlayer().getPosition().getyCoord() - 40, 11, 10);
 
 
+        for(Player p:model.getOtherPlayers()){
+            gc.setFill(Color.BLACK);
+            gc.setFont(new Font("System",14));
+            gc.fillText(p.getName(),p.getPosition().getxCoord()-p.getName().length()*4,p.getPosition().getyCoord()-45);
+            gc.setFill(Color.RED);
+            gc.setFont(new Font("System",10));
+            gc.fillText(String.format("%d%%",p.getHealth()),p.getPosition().getxCoord()-String.format("%d%%",p.getHealth()).length()*3,p.getPosition().getyCoord()-30);
+        }
     }
 }

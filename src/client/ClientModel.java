@@ -24,6 +24,23 @@ public class ClientModel extends Observable {
     private ClientModel(){
         otherPlayers = new LinkedList<>();
         world = new GameWorld(1024,576);
+
+        Player sepp = new Player("Sepp");
+        sepp.setPosition(new Point(600,20));
+        otherPlayers.add(sepp);
+        sepp = new Player("Franz");
+        sepp.setPosition(new Point(200,20));
+        otherPlayers.add(sepp);
+        sepp = new Player("Herbert");
+        sepp.setPosition(new Point(400,20));
+        otherPlayers.add(sepp);
+        sepp = new Player("Gustav");
+        sepp.setPosition(new Point(430,20));
+        otherPlayers.add(sepp);
+        sepp = new Player("Mehmet");
+        sepp.setPosition(new Point(800,20));
+        otherPlayers.add(sepp);
+
     }
 
 
@@ -33,7 +50,7 @@ public class ClientModel extends Observable {
 
     public void setLocalPlayer(Player player) {
         this.localPlayer = player;
-        player.setPosition(new Point(500,200));
+        player.setPosition(new Point(500,20));
     }
 
     public List<Player> getOtherPlayers() {
@@ -64,6 +81,13 @@ public class ClientModel extends Observable {
     }
 
     public void applyPhysics(){
-        localPlayer.applyPhysics(world);
+        for(Player p:getPlayers()){
+            p.applyPhysics(world);
+        }
+    }
+    public List<Player> getPlayers(){
+        List<Player> players = new ArrayList<>(getOtherPlayers());
+        players.add(getLocalPlayer());
+        return players;
     }
 }

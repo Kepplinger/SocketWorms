@@ -21,6 +21,8 @@ public class GameWorld {
     private final int width;            // Breite der Spielwelt
     private final int height;           // Höhe der Spielwelt
 
+    private boolean worldChanged = false;
+
     public GameWorld(int width, int height) {
         this.width = width;
         this.height = height;
@@ -34,8 +36,6 @@ public class GameWorld {
     private void generateSurface() {
 
         List<Point> generatedWorld = new LinkedList<>();
-
-        generatedWorld.add(new Point(0, height));
 
         Random random = new Random();
 
@@ -92,6 +92,7 @@ public class GameWorld {
         }
 
         gameWorld.add(new Surface(generatedWorld));
+        worldChanged=true;
     }
 
     /**
@@ -205,6 +206,7 @@ public class GameWorld {
         }
 
         gameWorld.addAll(newSurfaces);
+        worldChanged=true;
     }
 
     /**
@@ -244,7 +246,8 @@ public class GameWorld {
         Point nearestPoint = null;
         Point currentPoint;
 
-        for (Surface surface : gameWorld) {
+        for (int i = 0;i<gameWorld.size();i++) {
+            Surface surface = gameWorld.get(i);
             currentPoint = surface.getBorder().get(surface.getIndexofNearestPoint(p));
 
             if (nearestPoint == null || getDistance(p, nearestPoint) > getDistance(p, currentPoint))
@@ -258,5 +261,12 @@ public class GameWorld {
 
     private double getDistance(Point point1, Point point2) {
         return Math.sqrt(Math.pow(Math.abs(point1.getxCoord() - point2.getxCoord()), 2) + Math.pow(Math.abs(point1.getyCoord() - point2.getyCoord()), 2));
+    }
+
+    public boolean isWorldChanged() {
+        return worldChanged;
+    }
+    public void setWorldChanged(){
+        worldChanged=false;
     }
 }

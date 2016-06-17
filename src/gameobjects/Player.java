@@ -6,10 +6,12 @@ public class Player implements Serializable {
     private String name;
     private Point position;
     private int fallingspeed;
+    private int health;
 
     public Player(String playername) {
         name = playername;
         fallingspeed = 0;
+        health = 100;
     }
 
     public String getName() {
@@ -42,5 +44,17 @@ public class Player implements Serializable {
 
     private double getDistance(Point point1, Point point2) {
         return Math.sqrt(Math.pow(Math.abs(point1.getxCoord() - point2.getxCoord()), 2) + Math.pow(Math.abs(point1.getyCoord() - point2.getyCoord()), 2));
+    }
+
+    public int getHealth() {
+        return health;
+    }
+
+    public void setHealth(int removedHealth) {
+        this.health = health-removedHealth;
+    }
+
+    public boolean isDead(){
+        return health<=0;
     }
 }
