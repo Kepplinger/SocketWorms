@@ -23,6 +23,7 @@ public class ClientModel extends Observable {
 
     private ClientModel(){
         otherPlayers = new LinkedList<>();
+        rockets = new LinkedList<>();
         world = new GameWorld(1024,576);
 
         Player sepp = new Player("Sepp");

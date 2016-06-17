@@ -6,11 +6,14 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -36,13 +39,11 @@ public class GamefieldController implements Initializable {
 
     private ClientModel model;
 
-    private Point mouse;
     private double currentSpeed = 0.5;
     private double angle = 10;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        mouse = new Point(-1, -1);
         model = ClientModel.getInstance();
         gc = canvas.getGraphicsContext2D();
         hudgc = cv_hud.getGraphicsContext2D();
@@ -72,22 +73,7 @@ public class GamefieldController implements Initializable {
         pane.setOnKeyReleased(event -> {
             if (event.getCode() == KeyCode.ENTER) {
                 double speed = currentSpeed * 90;
-                Point destination = new Rocket(model.getLocalPlayer().getPosition(), speed, angle).calculateFlightPath(gc, model.getWorld());
-                Explosion explosion = new Explosion(new Point((int) destination.getxCoord(), (int) destination.getyCoord()));
-                explosion.calculateDamage(model.getPlayers());
-
-                model.getWorld().destroySurface(explosion);
-
-                double[] xCoord = new double[explosion.getBorder().length];
-                double[] grasYCoord = new double[explosion.getBorder().length];
-
-                for (int i = 0; i < explosion.getBorder().length; i++) {
-                    xCoord[i] = explosion.getBorder()[i].getxCoord();
-                    grasYCoord[i] = explosion.getBorder()[i].getyCoord();
-                }
-
-                gc.setFill(Color.RED);
-                gc.fillPolygon(xCoord, grasYCoord, explosion.getBorder().length);
+                model.getRockets().add(new Rocket(model.getLocalPlayer().getPosition(), speed, angle));
             }
 
             drawBackground();
@@ -104,7 +90,7 @@ public class GamefieldController implements Initializable {
             @Override
             public void run() {
                 Platform.runLater(() -> {
-                    hudgc.setFont(new Font("System",14));
+                    hudgc.setFont(new Font("System", 14));
                     hudgc.drawImage(new Image("/images/hud_background.png"), 0, 0, 1024, 50);
 
                     hudgc.setFill(Color.DARKGRAY);
@@ -118,13 +104,12 @@ public class GamefieldController implements Initializable {
                     hudgc.strokeText(String.format("%d%%", (int) (currentSpeed * 100)), 49, 26);
 
                     hudgc.setStroke(Color.WHITE);
-                    hudgc.strokeText(String.format("Mouse: X: %d Y: %d", mouse.getxCoord(), mouse.getyCoord()), 200, 15);
                     hudgc.strokeText(String.format("Player: X: %d Y: %d", model.getLocalPlayer().getPosition().getxCoord(),
                             model.getLocalPlayer().getPosition().getyCoord()), 400, 15);
                     hudgc.setStroke(Color.ORANGE);
                     hudgc.strokeText(String.format("Winkel: %.2f", angle), 200, 35);
                     hudgc.setFill(Color.RED);
-                    hudgc.setFont(new Font("System",24));
+                    hudgc.setFont(new Font("System", 24));
                     hudgc.fillText(String.format("♥ %d", model.getLocalPlayer().getHealth()), 930, 35);
 
                     drawBackground();
@@ -138,18 +123,44 @@ public class GamefieldController implements Initializable {
     }
 
     private void drawRockets() {
-        /*for(Rocket r:model.getRockets()){
+        for(Rocket r:model.getRockets()){
+            double speed = currentSpeed * 90;
+            Explosion explosion = r.fly(model.getWorld());
+            if(explosion == null){
+                gc.setFill(Color.RED);
+                gc.fillOval(r.getPosition().getxCoord()-3,r.getPosition().getyCoord()-3,6,6);
+            }
+            else{
+                model.getRockets().remove(r);
+                explosion.calculateDamage(model.getPlayers());
+                model.getWorld().destroySurface(explosion);
 
-        }*/
+                double[] xCoord = new double[explosion.getBorder().length];
+                double[] grasYCoord = new double[explosion.getBorder().length];
+
+                for (int i = 0; i < explosion.getBorder().length; i++) {
+                    xCoord[i] = explosion.getBorder()[i].getxCoord();
+                    grasYCoord[i] = explosion.getBorder()[i].getyCoord();
+                }
+
+                gc.setFill(Color.RED);
+                gc.fillPolygon(xCoord, grasYCoord, explosion.getBorder().length);
+            }
+            //Point destination = new Rocket(model.getLocalPlayer().getPosition(), speed, angle).calculateFlightPath(gc, model.getWorld());
+        }
     }
 
     private void drawPlayers() {
         if (model != null) {
-            for(Player p:model.getPlayers()){
+            for (Player p : model.getPlayers()) {
                 int x = p.getPosition().getxCoord();
                 int y = p.getPosition().getyCoord();
 
-                gc.drawImage(new Image("/images/worm.png"), x - 4, y - 16, 8, 16);
+                if (!p.isDead()) {
+                    gc.drawImage(new Image("/images/worm.png"), x - 4, y - 16, 8, 16);
+                } else {
+                    gc.drawImage(new Image("/images/grave.png"), x - 4, y - 12, 8, 12);
+                }
             }
         }
 
@@ -177,7 +188,22 @@ public class GamefieldController implements Initializable {
     }
 
     private void drawForground() {
-
+        for (Player p : model.getOtherPlayers()) {
+            if (!p.isDead()) {
+                gc.setFill(Color.BLACK);
+                gc.setFont(new Font("System", 14));
+                gc.fillText(p.getName(), p.getPosition().getxCoord() - (getStringWidth(p.getName(),new Font("System",14))/2), p.getPosition().getyCoord() - 45);
+                gc.setFill(Color.RED);
+                gc.setFont(new Font("System", 10));
+                gc.fillText(String.format("%d%%", p.getHealth()), p.getPosition().getxCoord() -
+                        (getStringWidth(String.format("%d%%", p.getHealth()),new Font("System",10))/2), p.getPosition().getyCoord() - 30);
+            }
+            else {
+                gc.setFill(Color.RED);
+                gc.setFont(new Font("System", 10));
+                gc.fillText(p.getName(), p.getPosition().getxCoord() - (getStringWidth(p.getName(),new Font("System",10))/2), p.getPosition().getyCoord() - 15);
+            }
+        }
 
         //Targetmarker
         int x = model.getLocalPlayer().getPosition().getxCoord();
@@ -197,23 +223,20 @@ public class GamefieldController implements Initializable {
             b = Math.cos(Math.toRadians(angle360)) * 50;
         }
         gc.setFill(Color.BLACK);
-        gc.fillOval(x + b-4,y - a-4,  8, 8);
+        gc.fillOval(x + b - 4, y - a - 4, 8, 8);
         gc.setFill(Color.GOLD);
-        gc.fillOval(x + b-3,y - a-3,  6, 6);
+        gc.fillOval(x + b - 3, y - a - 3, 6, 6);
         //gc.drawImage(new Image("/images/crossfade.png"), mouse.getxCoord() - 11, mouse.getyCoord() - 11, 21, 21);
 
         //Localplayersign
         gc.drawImage(new Image("/images/local_arrow.png"), model.getLocalPlayer().getPosition().getxCoord() - 6,
                 model.getLocalPlayer().getPosition().getyCoord() - 40, 11, 10);
 
+    }
 
-        for(Player p:model.getOtherPlayers()){
-            gc.setFill(Color.BLACK);
-            gc.setFont(new Font("System",14));
-            gc.fillText(p.getName(),p.getPosition().getxCoord()-p.getName().length()*4,p.getPosition().getyCoord()-45);
-            gc.setFill(Color.RED);
-            gc.setFont(new Font("System",10));
-            gc.fillText(String.format("%d%%",p.getHealth()),p.getPosition().getxCoord()-String.format("%d%%",p.getHealth()).length()*3,p.getPosition().getyCoord()-30);
-        }
+    public double getStringWidth(String text,Font font){
+        Text l = new Text(text);
+        l.setFont(font);
+        return l.getLayoutBounds().getWidth();
     }
 }

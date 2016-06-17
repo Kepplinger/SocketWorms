@@ -26,7 +26,7 @@ public class GameWorld {
     public GameWorld(int width, int height) {
         this.width = width;
         this.height = height;
-        gameWorld = new LinkedList<>();
+        gameWorld = Collections.synchronizedList(new LinkedList<>());
         generateSurface();
     }
 
@@ -91,7 +91,7 @@ public class GameWorld {
             generatedWorld.add(new Point(i, height));
         }
 
-        gameWorld.add(new Surface(generatedWorld));
+        getGameWorld().add(new Surface(generatedWorld));
         worldChanged=true;
     }
 
@@ -105,7 +105,7 @@ public class GameWorld {
 
         List<Surface> newSurfaces = new LinkedList<>(); //List für alle neuen "schwebenden" Teile
 
-        for (Surface surface : gameWorld) {
+        for (Surface surface : getGameWorld()) {
 
             List<Point> pointsToRemove = new LinkedList<>();    //Liste der Punkte die von der Explosion zerstört werden
             List<Point> pointsToAdd = new LinkedList<>();       //Liste der Punkte die sich an der Grenze der Explosion befinden
@@ -229,12 +229,12 @@ public class GameWorld {
         return (-2 * Math.pow(x, 3) + 3 * Math.pow(x, 2));
     }
 
-    public List<Surface> getGameWorld() {
+    public synchronized List<Surface> getGameWorld() {
         return gameWorld;
     }
 
     public boolean containsPoint(Point p) {
-        for (Surface surface : gameWorld) {
+        for (Surface surface : getGameWorld()) {
             if (surface.contains(p))
                 return true;
         }
@@ -246,8 +246,8 @@ public class GameWorld {
         Point nearestPoint = null;
         Point currentPoint;
 
-        for (int i = 0;i<gameWorld.size();i++) {
-            Surface surface = gameWorld.get(i);
+        for (int i = 0;i<getGameWorld().size();i++) {
+            Surface surface = getGameWorld().get(i);
             currentPoint = surface.getBorder().get(surface.getIndexofNearestPoint(p));
 
             if (nearestPoint == null || getDistance(p, nearestPoint) > getDistance(p, currentPoint))

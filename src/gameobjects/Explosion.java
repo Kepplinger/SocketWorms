@@ -69,7 +69,7 @@ public class Explosion {
     public void calculateDamage(List<Player> players){
         for(Player p:players){
             if(contains(p.getPosition())){
-                p.setHealth((int) (GameWorld.EXPLOSIONRADIUS-getDistance(p.getPosition(),center)));
+                p.removeHealth((int) (GameWorld.EXPLOSIONRADIUS-getDistance(p.getPosition(),center)));
             }
         }
     }

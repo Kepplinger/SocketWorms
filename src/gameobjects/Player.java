@@ -30,8 +30,10 @@ public class Player implements Serializable {
         if (getDistance(gameWorld.getNearestPoint(position),position) > 3) {
             position.setyCoord(position.getyCoord() + 5);
         }
+        if(position.getyCoord()>576)
+            removeHealth(100);
 
-        if (gameWorld.containsPoint(position)){
+        if (!isDead() && gameWorld.containsPoint(position)){
             Point point = gameWorld.getNearestPoint(position);
             point.setyCoord(point.getyCoord() - 2);
             position = point;
@@ -50,7 +52,7 @@ public class Player implements Serializable {
         return health;
     }
 
-    public void setHealth(int removedHealth) {
+    public void removeHealth(int removedHealth) {
         this.health = health-removedHealth;
     }
 
