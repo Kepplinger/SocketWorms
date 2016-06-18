@@ -5,6 +5,11 @@ import gameobjects.Player;
 import gameobjects.Point;
 import gameobjects.Rocket;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.util.*;
 
 /**
@@ -24,23 +29,33 @@ public class ClientModel extends Observable {
     private ClientModel(){
         otherPlayers = new LinkedList<>();
         rockets = new LinkedList<>();
-        world = new GameWorld(1024,576);
 
-        Player sepp = new Player("Sepp");
-        sepp.setPosition(new Point(600,20));
-        otherPlayers.add(sepp);
-        sepp = new Player("Franz");
-        sepp.setPosition(new Point(200,20));
-        otherPlayers.add(sepp);
-        sepp = new Player("Herbert");
-        sepp.setPosition(new Point(400,20));
-        otherPlayers.add(sepp);
-        sepp = new Player("Gustav");
-        sepp.setPosition(new Point(430,20));
-        otherPlayers.add(sepp);
-        sepp = new Player("Mehmet");
-        sepp.setPosition(new Point(800,20));
-        otherPlayers.add(sepp);
+        Timer t = new Timer(true);
+        t.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                Socket csocket = null;
+                try {
+                    csocket = new Socket();
+                    csocket.connect(new InetSocketAddress(getServerIP(), 7918), 10000);
+                    ObjectOutputStream out = new ObjectOutputStream(csocket.getOutputStream());
+
+                    out.writeObject("UpdateRequest");
+                    ObjectInputStream in = new ObjectInputStream(csocket.getInputStream());
+                    world = (GameWorld) in.readObject();
+                    world.setWorldChanged();
+                    otherPlayers = (List<Player>) in.readObject();
+                    otherPlayers.remove(otherPlayers.indexOf(localPlayer));
+
+                    System.out.println("Daten aktualisiert");
+                    csocket.close();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+        },0,10);
 
     }
 
@@ -90,5 +105,20 @@ public class ClientModel extends Observable {
         List<Player> players = new ArrayList<>(getOtherPlayers());
         players.add(getLocalPlayer());
         return players;
+    }
+
+    public void sendData() {
+        Socket csocket = null;
+        try {
+            csocket = new Socket();
+            csocket.connect(new InetSocketAddress(getServerIP(), 7918), 10000);
+            ObjectOutputStream out = new ObjectOutputStream(csocket.getOutputStream());
+
+            out.writeObject(getLocalPlayer());
+
+            csocket.close();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
     }
 }

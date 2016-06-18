@@ -1,11 +1,12 @@
 package gameobjects;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Created by Simon on 26.05.2016.
  */
-public class Surface {
+public class Surface implements Serializable{
 
     private List<Point> border;
     private double[] xCoords;

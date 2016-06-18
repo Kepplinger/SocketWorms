@@ -1,9 +1,11 @@
 package gameobjects;
 
+import java.io.Serializable;
+
 /**
  * Created by Kepplinger on 24.05.2016.
  */
-public class Point {
+public class Point implements Serializable{
 
     private int xCoord;
     private int yCoord;

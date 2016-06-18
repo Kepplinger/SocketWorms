@@ -8,6 +8,8 @@ public class Player implements Serializable {
     private int fallingspeed;
     private int health;
 
+    private Shoot ownShoot;
+
     public Player(String playername) {
         name = playername;
         fallingspeed = 0;
@@ -58,5 +60,17 @@ public class Player implements Serializable {
 
     public boolean isDead(){
         return health<=0;
+    }
+
+    public Shoot getShoot() {
+        if(ownShoot==null){
+            ownShoot = new Shoot(0.5,50,false);
+        }
+        return ownShoot;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof Player && ((Player)obj).getName().equals(this.getName());
     }
 }

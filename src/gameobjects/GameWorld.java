@@ -3,13 +3,14 @@ package gameobjects;
 import javafx.scene.shape.Polygon;
 import sun.awt.image.ImageWatched;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Created by Kepplinger on 24.05.2016.
  */
-public class GameWorld {
+public class GameWorld implements Serializable{
 
     public final static int EXPECTEDVARIATIONS = 10;    // Die erwartete Anzahl an Änderungen im Terrain
     public final static int MAXELEVATION = 1000;        // Die maximale Höhe einer Änderung im Terrain

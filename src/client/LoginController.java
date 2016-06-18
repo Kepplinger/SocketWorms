@@ -11,6 +11,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import server.ServerViewController;
 
 import java.io.IOException;
 import java.net.URL;
@@ -53,8 +54,10 @@ public class LoginController implements Initializable{
         Stage stage = new Stage();
         Parent root = null;
         try {
-            root = FXMLLoader.load(getClass().getResource("/world/World.fxml"));
-            stage.setTitle("Server - "+tf_serverip.getText());
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/server/views/ServerView.fxml"));
+            root = loader.load();
+            ServerViewController controller = loader.getController();
+            stage.setTitle("Server - "+controller.getModel().getServerIP());
             stage.setScene(new Scene(root));
             stage.centerOnScreen();
             stage.setResizable(true);

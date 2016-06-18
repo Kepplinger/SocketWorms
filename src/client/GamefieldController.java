@@ -51,9 +51,11 @@ public class GamefieldController implements Initializable {
         pane.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.SPACE) {
                 currentSpeed = currentSpeed >= 1 ? 0 : currentSpeed + 0.01;
+                model.getLocalPlayer().getShoot().setCurrentSpeed(currentSpeed);
             }
             if (event.getCode() == KeyCode.UP) {
                 angle = angle <= -180 ? 0 : angle >= 180 ? -179 : angle + 1;
+                model.getLocalPlayer().getShoot().setAngle(angle);
             }
             if (event.getCode() == KeyCode.DOWN) {
                 angle = angle <= -179 ? 180 : angle == 0 ? -1 : angle - 1;
@@ -64,16 +66,18 @@ public class GamefieldController implements Initializable {
             if (event.getCode() == KeyCode.RIGHT) {
                 model.getLocalPlayer().movePlayer(2);
             }
-
-            drawBackground();
-            drawPlayers();
-            drawRockets();
-            drawForground();
+            model.sendData();
+            //drawBackground();
+            //drawPlayers();
+            //drawRockets();
+            //drawForground();
         });
         pane.setOnKeyReleased(event -> {
             if (event.getCode() == KeyCode.ENTER) {
                 double speed = currentSpeed * 90;
                 model.getRockets().add(new Rocket(model.getLocalPlayer().getPosition(), speed, angle));
+                model.getLocalPlayer().getShoot().setFired(true);
+                model.sendData();
             }
 
             drawBackground();
@@ -117,14 +121,12 @@ public class GamefieldController implements Initializable {
                     drawRockets();
                     drawForground();
                 });
-                model.applyPhysics();
             }
         }, 100, 10);
     }
 
     private void drawRockets() {
         for(Rocket r:model.getRockets()){
-            double speed = currentSpeed * 90;
             Explosion explosion = r.fly(model.getWorld());
             if(explosion == null){
                 gc.setFill(Color.RED);
@@ -167,6 +169,7 @@ public class GamefieldController implements Initializable {
     }
 
     private void drawBackground() {
+        if(model.getWorld() !=null){
         if (ClientModel.getInstance().getWorld().isWorldChanged()) {
             ClientModel.getInstance().getWorld().setWorldChanged();
             GraphicsContext gcgf = canvas_gamefield.getGraphicsContext2D();
@@ -183,7 +186,7 @@ public class GamefieldController implements Initializable {
                         ClientModel.getInstance().getWorld().getGameWorld().get(i).getyCoords(),
                         ClientModel.getInstance().getWorld().getGameWorld().get(i).getxCoords().length);
             }
-        }
+        }}
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
     }
 
