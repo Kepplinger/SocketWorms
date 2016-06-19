@@ -4,12 +4,15 @@ import gameobjects.GameWorld;
 import gameobjects.Player;
 import gameobjects.Point;
 import gameobjects.Rocket;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.util.*;
 
 /**
@@ -18,15 +21,17 @@ import java.util.*;
 public class ClientModel extends Observable {
     private static ClientModel singelton;
 
+
     private String serverIP;
 
     private Player localPlayer;
+    private Player currentPlayer;
 
     private List<Player> otherPlayers;
     private List<Rocket> rockets;
     private GameWorld world;
 
-    private ClientModel(){
+    private ClientModel() {
         otherPlayers = new LinkedList<>();
         rockets = new LinkedList<>();
 
@@ -36,26 +41,32 @@ public class ClientModel extends Observable {
             public void run() {
                 Socket csocket = null;
                 try {
+                    //System.out.println("Neue Datenabfrage");
                     csocket = new Socket();
                     csocket.connect(new InetSocketAddress(getServerIP(), 7918), 10000);
                     ObjectOutputStream out = new ObjectOutputStream(csocket.getOutputStream());
 
-                    out.writeObject("UpdateRequest");
+                    out.writeObject("UpdateRequest" + (world == null ? "+WorldRequest" : ""));
                     ObjectInputStream in = new ObjectInputStream(csocket.getInputStream());
-                    world = (GameWorld) in.readObject();
-                    world.setWorldChanged();
+                    if (world == null) {
+                        world = (GameWorld) in.readObject();
+                    }
                     otherPlayers = (List<Player>) in.readObject();
+                    localPlayer = otherPlayers.get(otherPlayers.indexOf(localPlayer));
                     otherPlayers.remove(otherPlayers.indexOf(localPlayer));
+                    currentPlayer = (Player) in.readObject();
 
-                    System.out.println("Daten aktualisiert");
+                    //System.out.println("Daten aktualisiert");
                     csocket.close();
+                } catch (SocketTimeoutException e) {
+                    new Alert(Alert.AlertType.WARNING,"Keine Antwort vom Server!", ButtonType.OK).showAndWait();
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 } catch (ClassNotFoundException e) {
                     e.printStackTrace();
                 }
             }
-        },0,10);
+        }, 0, 5);
 
     }
 
@@ -66,11 +77,11 @@ public class ClientModel extends Observable {
 
     public void setLocalPlayer(Player player) {
         this.localPlayer = player;
-        player.setPosition(new Point(500,20));
     }
 
     public List<Player> getOtherPlayers() {
-        return otherPlayers;
+        ArrayList<Player> pl = new ArrayList<>(otherPlayers);
+        return pl;
     }
 
     public String getServerIP() {
@@ -82,8 +93,8 @@ public class ClientModel extends Observable {
     }
 
 
-    public static ClientModel getInstance(){
-        if(singelton==null)
+    public static ClientModel getInstance() {
+        if (singelton == null)
             singelton = new ClientModel();
         return singelton;
     }
@@ -96,15 +107,20 @@ public class ClientModel extends Observable {
         return world;
     }
 
-    public void applyPhysics(){
-        for(Player p:getPlayers()){
+    public void applyPhysics() {
+        for (Player p : getPlayers()) {
             p.applyPhysics(world);
         }
     }
-    public List<Player> getPlayers(){
+
+    public List<Player> getPlayers() {
         List<Player> players = new ArrayList<>(getOtherPlayers());
         players.add(getLocalPlayer());
         return players;
+    }
+
+    public Player getCurrentPlayer() {
+        return currentPlayer;
     }
 
     public void sendData() {
@@ -115,7 +131,7 @@ public class ClientModel extends Observable {
             ObjectOutputStream out = new ObjectOutputStream(csocket.getOutputStream());
 
             out.writeObject(getLocalPlayer());
-
+            //System.out.println("[Client] Daten gesendet!");
             csocket.close();
         } catch (IOException ex) {
             ex.printStackTrace();

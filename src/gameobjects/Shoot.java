@@ -40,4 +40,13 @@ public class Shoot implements Serializable{
     public void setFired(boolean fired) {
         this.fired = fired;
     }
+
+    @Override
+    public String toString() {
+        return "Shoot{" +
+                "angle=" + angle +
+                ", currentSpeed=" + currentSpeed +
+                ", fired=" + fired +
+                '}';
+    }
 }

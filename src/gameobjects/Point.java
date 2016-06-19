@@ -30,4 +30,12 @@ public class Point implements Serializable{
     public void setyCoord(int yCoord) {
         this.yCoord = yCoord;
     }
+
+    @Override
+    public String toString() {
+        return "Point{" +
+                "X:" + xCoord +
+                ", Y:" + yCoord +
+                '}';
+    }
 }

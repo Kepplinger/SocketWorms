@@ -37,8 +37,10 @@ public class GameState implements Serializable {
 
 
         if (teamA.size() <= teamB.size()) {
+            newPlayer.setTeam("A");
             teamA.put(newPlayer.getName(), newPlayer);
         } else {
+            newPlayer.setTeam("B");
             teamB.put(newPlayer.getName(), newPlayer);
         }
     }
@@ -54,6 +56,15 @@ public class GameState implements Serializable {
         if (left_TeamA == null || left_TeamB == null || (left_TeamB.size() == 0 && left_TeamA.size() == 0))
             newRound();
 
+        for(Player p:left_TeamA){
+            if(p!=null&&p.isDead())
+                left_TeamA.remove(p);
+        }
+        for(Player p:left_TeamB){
+            if(p!=null&&p.isDead())
+                left_TeamB.remove(p);
+        }
+
         if (left_TeamA.size() >= left_TeamB.size()) {
             next = left_TeamA.get(0);
             left_TeamA.remove(0);
@@ -61,6 +72,7 @@ public class GameState implements Serializable {
             next = left_TeamB.get(0);
             left_TeamB.remove(0);
         }
+        next.setCurrent(true);
         return next;
     }
 }

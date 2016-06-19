@@ -56,6 +56,7 @@ public class ServerModel {
                         if (currentShoot != null && currentShoot.isFired()) {
                             double speed = currentShoot.getCurrentSpeed() * 90;
                             getRockets().add(new Rocket(getCurrentPlayer().getPosition(), speed, currentShoot.getAngle()));
+                            currentShoot.setFired(false);
                         }
                         //Neue Runde
                         currentPlayer = state.nextPlayer();
@@ -74,37 +75,46 @@ public class ServerModel {
 
             try {
                 ServerSocket socket = new ServerSocket(7918);
-                Socket csocket = socket.accept();
-                Thread clientThread = new Thread(() -> {
-                    try {
-                        ObjectInputStream in = new ObjectInputStream(csocket.getInputStream());
-                        Object receivedP = in.readObject();
+                while (true) {
+                    Socket csocket = socket.accept();
+                    Thread clientThread = new Thread(() -> {
+                        try {
+                            ObjectInputStream in = new ObjectInputStream(csocket.getInputStream());
+                            Object receivedP = in.readObject();
 
-                        ObjectOutputStream out = new ObjectOutputStream(csocket.getOutputStream());
-                        if (receivedP instanceof String && ((String)receivedP).equals("UpdateRequest")) {
-                            //TODO
-                            //Client will Daten
-                            out.writeObject(world);
-                            out.writeObject(players);
-                        } else if (receivedP instanceof Player) {
-                            //Client schickt Daten
-                            Player pCL = (Player)receivedP;
-                            if(players.contains(pCL)){
-                                currentPlayer = pCL;
-                                players.remove(pCL);
-                                players.add(pCL);
+                            ObjectOutputStream out = new ObjectOutputStream(csocket.getOutputStream());
+                            if (receivedP instanceof String && ((String) receivedP).contains("UpdateRequest")) {
+                                //TODO
+                                //Client will Daten
+                                //System.out.println(new Date() + " [Client Datenabfrage]");
+                                if (((String) receivedP).contains("WorldRequest"))
+                                    out.writeObject(world);
+                                out.writeObject(players);
+                                out.writeObject(currentPlayer);
+                            } else if (receivedP instanceof Player) {
+                                //Client schickt Daten
+                                Player pCL = (Player) receivedP;
+                                if (players.contains(pCL)) {
+                                    currentPlayer = pCL;
+                                    currentShoot = pCL.getShoot();
+                                    players.remove(pCL);
+                                    players.add(pCL);
+                                    //System.out.println(players.get(players.indexOf(pCL))); Gesendeter Spieler
+                                } else {
+                                    System.out.println("[Server] Der Spieler ist nicht vorhanden!");
+                                }
+                            } else {
+                                System.out.println("Unidentifiable message from Client");
                             }
-                        } else {
-                            System.out.println("Unidentifiable message from Client");
+                        } catch (IOException ex) {
+                            ex.printStackTrace();
+                        } catch (ClassNotFoundException ex) {
+                            ex.printStackTrace();
                         }
-                    } catch (IOException ex) {
-                        ex.printStackTrace();
-                    } catch (ClassNotFoundException ex) {
-                        ex.printStackTrace();
-                    }
-                });
-                clientThread.setDaemon(true);
-                clientThread.start();
+                    });
+                    clientThread.setDaemon(true);
+                    clientThread.start();
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -119,7 +129,7 @@ public class ServerModel {
     }
 
     public void applyPhysics() {
-        for (Player p : players) {
+        for (Player p : getPlayers()) {
             p.applyPhysics(getWorld());
         }
         for (Rocket r : rockets) {
@@ -137,7 +147,7 @@ public class ServerModel {
     }
 
     public List<Player> getPlayers() {
-        return players;
+        return new ArrayList<>(players);
     }
 
     public GameWorld getWorld() {
