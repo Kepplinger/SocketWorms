@@ -5,12 +5,14 @@ import java.io.Serializable;
 /**
  * Created by Kepplinger on 24.05.2016.
  */
-public class Point implements Serializable{
+public class Point implements Serializable {
 
     private int xCoord;
     private int yCoord;
 
-    public Point(int xCoord, int yCoord){
+    private boolean changed = false;
+
+    public Point(int xCoord, int yCoord) {
         this.xCoord = xCoord;
         this.yCoord = yCoord;
     }
@@ -25,10 +27,12 @@ public class Point implements Serializable{
 
     public void setxCoord(int xCoord) {
         this.xCoord = xCoord;
+        changed = true;
     }
 
     public void setyCoord(int yCoord) {
         this.yCoord = yCoord;
+        changed = true;
     }
 
     @Override
@@ -37,5 +41,13 @@ public class Point implements Serializable{
                 "X:" + xCoord +
                 ", Y:" + yCoord +
                 '}';
+    }
+
+    public void setChanged(boolean changed) {
+        this.changed = changed;
+    }
+
+    public boolean hasChanged() {
+        return changed;
     }
 }

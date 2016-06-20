@@ -11,6 +11,8 @@ public class Shoot implements Serializable{
 
     private boolean fired = false;
 
+    private boolean changed = false;
+
     public Shoot(double currentSpeed, double angle, boolean fired) {
         this.currentSpeed = currentSpeed;
         this.angle = angle;
@@ -31,14 +33,17 @@ public class Shoot implements Serializable{
 
     public void setAngle(double angle) {
         this.angle = angle;
+        changed = true;
     }
 
     public void setCurrentSpeed(double currentSpeed) {
         this.currentSpeed = currentSpeed;
+        changed = true;
     }
 
     public void setFired(boolean fired) {
         this.fired = fired;
+        changed = true;
     }
 
     @Override
@@ -48,5 +53,13 @@ public class Shoot implements Serializable{
                 ", currentSpeed=" + currentSpeed +
                 ", fired=" + fired +
                 '}';
+    }
+
+    public boolean hasChanged() {
+        return changed;
+    }
+
+    public void setChanged(boolean changed) {
+        this.changed = changed;
     }
 }
