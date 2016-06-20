@@ -2,29 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="cdb932d9-7e58-4d94-93a9-e7b232ef17da" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/24_Worms/client/Gamefield.fxml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/24_Worms/client/Mainform.fxml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/24_Worms/controller/Controller$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/24_Worms/controller/Controller.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/24_Worms/images/worm.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/out/production/24_Worms/world/World.fxml" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/24_Worms/client/ClientModel$1.class" afterPath="$PROJECT_DIR$/out/production/24_Worms/client/ClientModel$1.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/24_Worms/client/ClientModel.class" afterPath="$PROJECT_DIR$/out/production/24_Worms/client/ClientModel.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/24_Worms/client/GamefieldController$1.class" afterPath="$PROJECT_DIR$/out/production/24_Worms/client/GamefieldController$1.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/24_Worms/client/GamefieldController.class" afterPath="$PROJECT_DIR$/out/production/24_Worms/client/GamefieldController.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/24_Worms/client/LoginController.class" afterPath="$PROJECT_DIR$/out/production/24_Worms/client/LoginController.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/24_Worms/client/Main.class" afterPath="$PROJECT_DIR$/out/production/24_Worms/client/Main.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/24_Worms/gameobjects/Explosion.class" afterPath="$PROJECT_DIR$/out/production/24_Worms/gameobjects/Explosion.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/24_Worms/gameobjects/GameWorld.class" afterPath="$PROJECT_DIR$/out/production/24_Worms/gameobjects/GameWorld.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/24_Worms/gameobjects/Player.class" afterPath="$PROJECT_DIR$/out/production/24_Worms/gameobjects/Player.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/24_Worms/gameobjects/Point.class" afterPath="$PROJECT_DIR$/out/production/24_Worms/gameobjects/Point.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/24_Worms/gameobjects/Rocket.class" afterPath="$PROJECT_DIR$/out/production/24_Worms/gameobjects/Rocket.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/24_Worms/gameobjects/Surface.class" afterPath="$PROJECT_DIR$/out/production/24_Worms/gameobjects/Surface.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/24_Worms/images/titlemenu.png" afterPath="$PROJECT_DIR$/out/production/24_Worms/images/titlemenu.png" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/24_Worms/main/Main.class" afterPath="$PROJECT_DIR$/out/production/24_Worms/main/Main.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/gameobjects/Player.java" afterPath="$PROJECT_DIR$/src/gameobjects/Player.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/gameobjects/Point.java" afterPath="$PROJECT_DIR$/src/gameobjects/Point.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/client/GamefieldController.java" afterPath="$PROJECT_DIR$/src/client/GamefieldController.java" />
     </list>
     <ignored path="JavaFxApplication.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -98,8 +76,8 @@
       <file leaf-file-name="GamefieldController.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/client/GamefieldController.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.048034936">
-              <caret line="92" column="22" selection-start-line="92" selection-start-column="22" selection-end-line="92" selection-end-column="22" />
+            <state vertical-scroll-proportion="0.720524">
+              <caret line="106" column="21" selection-start-line="106" selection-start-column="21" selection-end-line="106" selection-end-column="21" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -134,8 +112,8 @@
       <file leaf-file-name="ClientModel.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/client/ClientModel.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-10.388889">
-              <caret line="63" column="39" selection-start-line="63" selection-start-column="39" selection-end-line="63" selection-end-column="39" />
+            <state vertical-scroll-proportion="-25.666666">
+              <caret line="75" column="25" selection-start-line="75" selection-start-column="25" selection-end-line="75" selection-end-column="25" />
               <folding />
             </state>
           </provider>
@@ -144,8 +122,8 @@
       <file leaf-file-name="ServerViewController.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/server/ServerViewController.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="5.7777777">
-              <caret line="73" column="21" selection-start-line="73" selection-start-column="21" selection-end-line="73" selection-end-column="21" />
+            <state vertical-scroll-proportion="2.7222223">
+              <caret line="78" column="13" selection-start-line="78" selection-start-column="13" selection-end-line="78" selection-end-column="13" />
               <folding />
             </state>
           </provider>
@@ -174,8 +152,8 @@
       <file leaf-file-name="ServerModel.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/server/ServerModel.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-3.4722223">
-              <caret line="102" column="40" selection-start-line="102" selection-start-column="40" selection-end-line="102" selection-end-column="40" />
+            <state vertical-scroll-proportion="-13.25">
+              <caret line="107" column="40" selection-start-line="107" selection-start-column="40" selection-end-line="107" selection-end-column="40" />
               <folding />
             </state>
           </provider>
@@ -736,12 +714,12 @@
       <workItem from="1465202215965" duration="3139000" />
       <workItem from="1465910230644" duration="3025000" />
       <workItem from="1466417127154" duration="199000" />
-      <workItem from="1466417339919" duration="3911000" />
+      <workItem from="1466417339919" duration="3983000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="82153000" />
+    <option name="totallyTimeSpent" value="82225000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -926,7 +904,7 @@
         <state vertical-scroll-proportion="0.0">
           <caret line="32" column="30" selection-start-line="32" selection-start-column="30" selection-end-line="32" selection-end-column="30" />
           <folding>
-            <element signature="e#1162#1163#0" expanded="false" />
+            <element signature="e#1131#1132#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -1173,8 +1151,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/server/ServerModel.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-3.4722223">
-          <caret line="102" column="40" selection-start-line="102" selection-start-column="40" selection-end-line="102" selection-end-column="40" />
+        <state vertical-scroll-proportion="-13.25">
+          <caret line="107" column="40" selection-start-line="107" selection-start-column="40" selection-end-line="107" selection-end-column="40" />
           <folding />
         </state>
       </provider>
@@ -1186,8 +1164,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/server/ServerViewController.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="5.7777777">
-          <caret line="73" column="21" selection-start-line="73" selection-start-column="21" selection-end-line="73" selection-end-column="21" />
+        <state vertical-scroll-proportion="2.7222223">
+          <caret line="78" column="13" selection-start-line="78" selection-start-column="13" selection-end-line="78" selection-end-column="13" />
           <folding />
         </state>
       </provider>
@@ -1199,16 +1177,16 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/client/ClientModel.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-10.388889">
-          <caret line="63" column="39" selection-start-line="63" selection-start-column="39" selection-end-line="63" selection-end-column="39" />
+        <state vertical-scroll-proportion="-25.666666">
+          <caret line="75" column="25" selection-start-line="75" selection-start-column="25" selection-end-line="75" selection-end-column="25" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/client/GamefieldController.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.048034936">
-          <caret line="92" column="22" selection-start-line="92" selection-start-column="22" selection-end-line="92" selection-end-column="22" />
+        <state vertical-scroll-proportion="0.720524">
+          <caret line="106" column="21" selection-start-line="106" selection-start-column="21" selection-end-line="106" selection-end-column="21" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>

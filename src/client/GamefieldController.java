@@ -99,6 +99,13 @@ public class GamefieldController implements Initializable {
                     hudgc.setStroke(Color.BLACK);
                     hudgc.strokeRoundRect(10, 10, 104, 24, 5, 5);
 
+                    if (model.getOtherPlayers().size() <= 0) {
+                        gc.drawImage(new Image(getClass().getResource("/images/wait.png").toExternalForm()),250,250,248,248);
+                    }
+                    else {
+                        gc.clearRect(250,250,300,300);
+                    }
+
                     if (model.getCurrentPlayer() != null && model.getLocalPlayer() != null) {
                         hudgc.setFill(Color.DARKRED);
                         hudgc.fillRoundRect(12, 12, model.getLocalPlayer().getShoot().getCurrentSpeed() * 100, 20, 5, 5);
