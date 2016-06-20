@@ -10,13 +10,13 @@ import java.util.concurrent.CopyOnWriteArrayList;
 /**
  * Created by Kepplinger on 24.05.2016.
  */
-public class GameWorld implements Serializable{
+public class GameWorld implements Serializable {
 
     public final static int EXPECTEDVARIATIONS = 10;    // Die erwartete Anzahl an Änderungen im Terrain
     public final static int MAXELEVATION = 1000;        // Die maximale Höhe einer Änderung im Terrain
     public final static int MINVARIATIONYWIDTH = 100;   // Die minimale Breite einer Änderung im Terrain
     public final static int EXPLOSIONRADIUS = 50;       // Radius einer Explosion
-    public final static int EXPLOSIONPOINTS = 120;      // Anzahl der Punkte einer Explosion
+    public final static int EXPLOSIONPOINTS = 60;      // Anzahl der Punkte einer Explosion
 
     private List<Surface> gameWorld;    // Liste aller Oberflächen im Spiel
     private final int width;            // Breite der Spielwelt
@@ -94,11 +94,7 @@ public class GameWorld implements Serializable{
         }
 
         getGameWorld().add(new Surface(generatedWorld));
-        worldChanged=true;
-
-        for (Point point : getGameWorld().get(0).getBorder()){
-            System.out.println(point.getxCoord() + " / " + point.getyCoord());
-        }
+        worldChanged = true;
     }
 
     /**
@@ -120,6 +116,7 @@ public class GameWorld implements Serializable{
 
             /* Alle Punkte der Oberfläche inerhalb der Explosion werden entfernt */
             for (Point point : surface.getBorder()) {
+
                 if (explosion.contains(point)) {
 
                     /* Sollte der aktulle Punkte der erste Schnittpunkte sein, werden die Initial-Variablen gesetzt */
@@ -134,6 +131,7 @@ public class GameWorld implements Serializable{
             /* Bei einer Überschneidung der Punkte, werden alle dafür vorgesehenen Berchenungen durchgeführt */
             if (initialIndex != -1) {
 
+
                 int indexOfNearestPoint = explosion.getIndexofNearestPoint(initialPoint);   //Index der Explosion der sich am nähesten beim Schnittpunkte befindet
                 int maxLength = indexOfNearestPoint + explosion.getBorder().length;         //Maximale Anzahl die von der folgenden Schleife iteriert werden kann
 
@@ -144,6 +142,8 @@ public class GameWorld implements Serializable{
 
                 indexOfNearestPoint %= explosion.getBorder().length;
                 int index = indexOfNearestPoint;
+
+
 
                 /* Alle Punkte der Explosion die sich in der Oberfläche befinden werden ausgehend vom indexOfNearestPoint zu der pointsToAdd Liste hinzugefügt */
                 while (surface.contains(explosion.getBorder()[index % explosion.getBorder().length]) && index < explosion.getBorder().length + indexOfNearestPoint) {
@@ -212,10 +212,13 @@ public class GameWorld implements Serializable{
 
                 surface.setBorder(newBorder);
             }
+
         }
 
         gameWorld.addAll(newSurfaces);
-        worldChanged=true;
+        worldChanged = true;
+
+
     }
 
     /**
@@ -243,11 +246,14 @@ public class GameWorld implements Serializable{
     }
 
     public boolean containsPoint(Point p) {
+
         for (Surface surface : getGameWorld()) {
             if (surface.contains(p))
                 return true;
         }
+
         return false;
+
     }
 
     public Point getNearestPoint(Point p) {
@@ -255,17 +261,18 @@ public class GameWorld implements Serializable{
         Point nearestPoint = null;
         Point currentPoint;
 
-        for (int i = 0;i<getGameWorld().size();i++) {
+        for (int i = 0; i < getGameWorld().size(); i++) {
             Surface surface = getGameWorld().get(i);
             currentPoint = surface.getBorder().get(surface.getIndexofNearestPoint(p));
 
             if (nearestPoint == null || getDistance(p, nearestPoint) > getDistance(p, currentPoint))
                 nearestPoint = currentPoint;
         }
+
         if (nearestPoint == null)
             return p;
         else
-            return new Point(nearestPoint.getxCoord(),nearestPoint.getyCoord());
+            return new Point(nearestPoint.getxCoord(), nearestPoint.getyCoord());
     }
 
     private double getDistance(Point point1, Point point2) {
@@ -275,7 +282,8 @@ public class GameWorld implements Serializable{
     public boolean isWorldChanged() {
         return worldChanged;
     }
-    public void setWorldChanged(){
-        worldChanged=false;
+
+    public void setWorldChanged() {
+        worldChanged = false;
     }
 }

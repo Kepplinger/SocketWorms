@@ -1,12 +1,13 @@
 package gameobjects;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 
 /**
  * Created by Simon on 26.05.2016.
  */
-public class Surface implements Serializable{
+public class Surface implements Serializable {
 
     private List<Point> border;
     private double[] xCoords;
@@ -45,6 +46,7 @@ public class Surface implements Serializable{
     }
 
     public boolean contains(Point point) {
+
         int i;
         int j;
         boolean result = false;
@@ -69,13 +71,14 @@ public class Surface implements Serializable{
         double smallestDistance = Double.MAX_VALUE;
         int index = 0;
 
-        for (int i = 0; i < border.size(); i++) {
-            if (smallestDistance > getDistance(border.get(i), point)) {
-                smallestDistance = getDistance(border.get(i), point);
-                index = i;
+        for (Point borderPoint : border){
+            if (smallestDistance > getDistance(borderPoint, point)) {
+
+                smallestDistance = getDistance(borderPoint, point);
+                index = border.indexOf(borderPoint);
+
             }
         }
-
         return index;
     }
 

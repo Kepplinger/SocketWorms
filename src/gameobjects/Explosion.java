@@ -1,7 +1,6 @@
 package gameobjects;
 
-import java.util.Collection;
-import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -9,8 +8,8 @@ import java.util.List;
  */
 public class Explosion {
 
-    Point[] border;
-    Point center;
+    private Point[] border;
+    private Point center;
 
     public Explosion(Point point) {
         center = point;
@@ -23,7 +22,6 @@ public class Explosion {
     }
 
     public void determineBorder(Point point) {
-
         double angle = 0;
 
         for (int i = GameWorld.EXPLOSIONPOINTS - 1; i >= 0; i--) {
@@ -43,7 +41,6 @@ public class Explosion {
     }
 
     public int getIndexofNearestPoint(Point point) {
-
         double smallestDistance = Double.MAX_VALUE;
         int index = 0;
 
@@ -58,7 +55,6 @@ public class Explosion {
     }
 
     public void calculateDamage(List<Player> players) {
-
         for (Player p : players) {
             if (contains(p.getPosition())) {
                 p.removeHealth((int) (GameWorld.EXPLOSIONRADIUS - getDistance(p.getPosition(), center)));

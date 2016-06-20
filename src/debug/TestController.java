@@ -6,6 +6,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
 import gameobjects.GameWorld;
 
@@ -37,19 +38,28 @@ public class TestController implements Initializable {
         }, new Date(), 100);
 
         canvas.setOnMousePressed(event -> {
-            Explosion explosion = new Explosion(new Point((int) event.getX(), (int) event.getY()));
-            gameWorld.destroySurface(explosion);
+            if (event.getButton().equals(MouseButton.PRIMARY)) {
+                Explosion explosion = new Explosion(new Point((int) event.getX(), (int) event.getY()));
+                gameWorld.destroySurface(explosion);
 
-            double[] xCoord = new double[explosion.getBorder().length];
-            double[] grasYCoord = new double[explosion.getBorder().length];
+                double[] xCoord = new double[explosion.getBorder().length];
+                double[] grasYCoord = new double[explosion.getBorder().length];
 
-            for (int i = 0; i < explosion.getBorder().length; i++) {
-                xCoord[i] = explosion.getBorder()[i].getxCoord();
-                grasYCoord[i] = explosion.getBorder()[i].getyCoord();
+                for (int i = 0; i < explosion.getBorder().length; i++) {
+                    xCoord[i] = explosion.getBorder()[i].getxCoord();
+                    grasYCoord[i] = explosion.getBorder()[i].getyCoord();
+                }
+
+                gc.setFill(Color.RED);
+                gc.fillPolygon(xCoord, grasYCoord, explosion.getBorder().length);
+            }else{
+                double inital = System.nanoTime();
+
+                System.out.println(gameWorld.containsPoint(new Point((int)event.getX(),(int)event.getY())));
+                gameWorld.getNearestPoint(new Point((int)event.getX(),(int)event.getY()));
+
+                System.out.println(System.nanoTime() - inital);
             }
-
-            gc.setFill(Color.RED);
-            gc.fillPolygon(xCoord, grasYCoord, explosion.getBorder().length);
 
         });
     }
