@@ -107,6 +107,7 @@ public class ServerModel {
                                     }
                                 } else {
                                     System.out.println("[Server] Der Spieler ist nicht vorhanden!");
+                                    System.out.println(pCL.getName() +" ist dem Spiel beigetreten.");
                                     state.join(pCL);
                                 }
                             } else {
@@ -143,7 +144,7 @@ public class ServerModel {
             if (explosion != null) {
                 getRockets().remove(r);
                 explosion.calculateDamage(getPlayers());
-                //getWorld().destroySurface(explosion);
+                getWorld().destroySurface(explosion);
             }
         }
     }
