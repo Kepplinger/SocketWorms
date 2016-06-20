@@ -86,8 +86,19 @@ public class Player implements Serializable {
     }
 
     public void removeHealth(int removedHealth) {
-        this.health = health - removedHealth;
-        changed = true;
+        if (health > 0) {
+            if (health-removedHealth < 0) {
+                health = 0;
+            }
+            else {
+                this.health = health - removedHealth;
+            }
+            changed = true;
+        }
+        else {
+            changed = false;
+        }
+
     }
 
     public boolean isDead() {

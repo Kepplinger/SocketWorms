@@ -65,47 +65,58 @@ public class GameState implements Serializable {
         left_TeamA.removeAll(getDeadPlayer(teamA.values()));
         left_TeamB.removeAll(getDeadPlayer(teamB.values()));
 
-        if((left_TeamB.size() == 0 || left_TeamA.size() == 0)){
-            if(left_TeamA.size()==0){
-                info.setPoints_b(info.getPoints_b()+1);
-            }
-            else{
-                info.setPoints_a(info.getPoints_a()+1);
+        if ((left_TeamB.size() == 0 || left_TeamA.size() == 0)) {
+            if (left_TeamA.size() == 0) {
+                info.setPoints_b(info.getPoints_b() + 1);
+            } else {
+                info.setPoints_a(info.getPoints_a() + 1);
             }
             newRound();
         }
 
-        if (left_TeamA.size() >= left_TeamB.size()) {
+
+        if (left_TeamA.size() > left_TeamB.size()) {
             next = left_TeamA.get(0);
             left_TeamA.remove(0);
+        } else if (left_TeamA.size() == left_TeamB.size()) {
+            if (new Random().nextInt(2) == 0) {
+                next = left_TeamB.get(0);
+                left_TeamB.remove(0);
+            } else {
+                next = left_TeamA.get(0);
+                left_TeamA.remove(0);
+            }
         } else {
+
             next = left_TeamB.get(0);
             left_TeamB.remove(0);
         }
         next.setCurrent(true);
         return next;
     }
-    public void printTeams(){
+
+    public void printTeams() {
         System.out.println("TeamA:");
-        for(Player p:teamA.values()){
-            System.out.println("\t"+p.getName());
+        for (Player p : teamA.values()) {
+            System.out.println("\t" + p.getName());
         }
         System.out.println("TeamB:");
-        for(Player p:teamB.values()){
-            System.out.println("\t"+p.getName());
+        for (Player p : teamB.values()) {
+            System.out.println("\t" + p.getName());
         }
     }
-    private List<Player> getDeadPlayer(Collection<Player> plyrs){
+
+    private List<Player> getDeadPlayer(Collection<Player> plyrs) {
         List<Player> pl = new ArrayList<>();
-        for(Player p:players){
-            if(p.isDead()){
+        for (Player p : players) {
+            if (p.isDead()) {
                 pl.add(p);
             }
         }
         return pl;
     }
 
-    public GameInfo getInfo(){
+    public GameInfo getInfo() {
         info.setPlayer_A_cnt(teamA.size());
         info.setPlayer_B_cnt(teamB.size());
         info.setCurDeaths_A(getDeadPlayer(teamA.values()).size());
