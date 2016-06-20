@@ -57,11 +57,8 @@ public class Explosion {
         return index;
     }
 
-    private boolean containsPlayer(Player p) {
-        return true;
-    }
-
     public void calculateDamage(List<Player> players) {
+
         for (Player p : players) {
             if (contains(p.getPosition())) {
                 p.removeHealth((int) (GameWorld.EXPLOSIONRADIUS - getDistance(p.getPosition(), center)));

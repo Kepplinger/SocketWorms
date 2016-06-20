@@ -82,6 +82,7 @@ public class GameWorld implements Serializable{
             }
         }
 
+
         //Alle Punkte auf der rechten Seite der Welt werden hinzugefügt
         for (int i = height; i > height - relativHeight; i--) {
             generatedWorld.add(new Point(width, i));
