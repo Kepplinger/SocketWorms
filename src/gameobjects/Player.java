@@ -84,7 +84,13 @@ public class Player implements Serializable {
     }
 
     public boolean isDead() {
-        return health <= 0;
+        if (health<=0 || position.getyCoord()>576)
+        {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 
     public Shoot getShoot() {

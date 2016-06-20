@@ -31,8 +31,13 @@ public class Point implements Serializable {
     }
 
     public void setyCoord(int yCoord) {
-        this.yCoord = yCoord;
-        changed = true;
+        if(yCoord>576) {
+            this.yCoord=600;
+        }
+        else {
+            this.yCoord = yCoord;
+            changed = true;
+        }
     }
 
     @Override
