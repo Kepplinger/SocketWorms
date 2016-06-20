@@ -40,6 +40,7 @@ public class LoginController implements Initializable{
     public void connect(ActionEvent actionEvent) {
         ClientModel.getInstance().setLocalPlayer(new Player(tf_playername.getText(),skinID));
         ClientModel.getInstance().setServerIP(tf_serverip.getText());
+        //ClientModel.getInstance().sendData();
 
         Stage stage = new Stage();
         Parent root = null;

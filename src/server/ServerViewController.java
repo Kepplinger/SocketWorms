@@ -58,33 +58,34 @@ public class ServerViewController implements Initializable {
                     hudgc.setStroke(Color.BLACK);
                     hudgc.strokeRoundRect(10, 10, 104, 24, 5, 5);
 
-                    hudgc.setFill(Color.DARKRED);
-                    hudgc.fillRoundRect(12, 12, model.getCurrentPlayer().getShoot().getCurrentSpeed() * 100, 20, 5, 5);
-                    hudgc.setStroke(Color.WHITE);
-                    hudgc.strokeText(String.format("%d%%", (int) (model.getCurrentPlayer().getShoot().getCurrentSpeed() * 100)), 49, 26);
+                    if (model.getCurrentPlayer() != null) {
+                        hudgc.setFill(Color.DARKRED);
+                        hudgc.fillRoundRect(12, 12, model.getCurrentPlayer().getShoot().getCurrentSpeed() * 100, 20, 5, 5);
+                        hudgc.setStroke(Color.WHITE);
+                        hudgc.strokeText(String.format("%d%%", (int) (model.getCurrentPlayer().getShoot().getCurrentSpeed() * 100)), 49, 26);
 
-                    hudgc.setFill(Color.ORANGE);
-                    hudgc.fillText(String.format("%s: X:%d Y:%d   ∠ %.2f°    ♥ %d",model.getCurrentPlayer().getName(), model.getCurrentPlayer().getPosition().getxCoord(),
-                            model.getCurrentPlayer().getPosition().getyCoord(),model.getCurrentPlayer().getShoot().getAngle(),model.getCurrentPlayer().getHealth()), 250, 15);
-
-                    drawBackground();
-                    drawPlayers();
-                    drawRockets();
-                    drawForground();
+                        hudgc.setFill(Color.ORANGE);
+                        hudgc.fillText(String.format("%s: X:%d Y:%d   ∠ %.2f°    ♥ %d", model.getCurrentPlayer().getName(), model.getCurrentPlayer().getPosition().getxCoord(),
+                                model.getCurrentPlayer().getPosition().getyCoord(), model.getCurrentPlayer().getShoot().getAngle(), model.getCurrentPlayer().getHealth()), 250, 15);
+                        drawBackground();
+                        drawPlayers();
+                        drawRockets();
+                        drawForground();
+                    }
                 });
             }
         }, 100, 10);
 
-        drawBackground();
-        drawPlayers();
-        drawRockets();
+        //drawBackground();
+        //drawPlayers();
+        //drawRockets();
     }
 
     private void drawForground() {
         for (Player p : model.getOtherPlayers()) {
             if (!p.isDead()) {
                 if (!p.getTeam().equals(model.getCurrentPlayer().getTeam())) {
-                    gc.drawImage(new Image("/images/enemy_arrow.png"),p.getPosition().getxCoord() - 6,
+                    gc.drawImage(new Image("/images/enemy_arrow.png"), p.getPosition().getxCoord() - 6,
                             p.getPosition().getyCoord() - 70, 11, 10);
                 }
                 gc.setFill(Color.BLACK);
@@ -147,9 +148,9 @@ public class ServerViewController implements Initializable {
 
                 if (!p.isDead()) {
                     if (p.getShoot().getAngle() < 90 && p.getShoot().getAngle() > -90) {
-                        gc.drawImage(new Image(String.format("/images/worms/Rworm%d.png",p.getWormSkin())), x - 4, y - 16, 8, 16);
+                        gc.drawImage(new Image(String.format("/images/worms/Rworm%d.png", p.getWormSkin())), x - 4, y - 16, 8, 16);
                     } else {
-                        gc.drawImage(new Image(String.format("/images/worms/worm%d.png",p.getWormSkin())), x - 4, y - 16, 8, 16);
+                        gc.drawImage(new Image(String.format("/images/worms/worm%d.png", p.getWormSkin())), x - 4, y - 16, 8, 16);
                     }
                 } else {
                     gc.drawImage(new Image("/images/grave.png"), x - 4, y - 12, 8, 12);

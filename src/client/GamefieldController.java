@@ -98,24 +98,28 @@ public class GamefieldController implements Initializable {
                     hudgc.setStroke(Color.BLACK);
                     hudgc.strokeRoundRect(10, 10, 104, 24, 5, 5);
 
-                    hudgc.setFill(Color.DARKRED);
-                    hudgc.fillRoundRect(12, 12, model.getCurrentPlayer().getShoot().getCurrentSpeed() * 100, 20, 5, 5);
-                    hudgc.setStroke(Color.WHITE);
-                    hudgc.strokeText(String.format("%d%%", (int) (model.getCurrentPlayer().getShoot().getCurrentSpeed() * 100)), 49, 26);
+                    if (model.getCurrentPlayer() != null && model.getLocalPlayer() != null) {
+                        hudgc.setFill(Color.DARKRED);
+                        hudgc.fillRoundRect(12, 12, model.getLocalPlayer().getShoot().getCurrentSpeed() * 100, 20, 5, 5);
+                        hudgc.setStroke(Color.WHITE);
+                        hudgc.strokeText(String.format("%d%%", (int) (model.getLocalPlayer().getShoot().getCurrentSpeed() * 100)), 49, 26);
 
-                    hudgc.setStroke(Color.WHITE);
-                    hudgc.strokeText(String.format("Player: X: %d Y: %d", model.getLocalPlayer().getPosition().getxCoord(),
-                            model.getLocalPlayer().getPosition().getyCoord()), 400, 15);
-                    hudgc.setStroke(Color.ORANGE);
-                    hudgc.strokeText(String.format("Winkel: %.2f", model.getCurrentPlayer().getShoot().getAngle()), 200, 35);
-                    hudgc.setFill(Color.RED);
-                    hudgc.setFont(new Font("System", 24));
-                    hudgc.fillText(String.format("♥ %d", model.getLocalPlayer().getHealth()), 930, 35);
+                        if (model.getLocalPlayer().getPosition() != null) {
+                            hudgc.setStroke(Color.WHITE);
+                            hudgc.strokeText(String.format("Player: X: %d Y: %d", model.getLocalPlayer().getPosition().getxCoord(),
+                                    model.getLocalPlayer().getPosition().getyCoord()), 400, 15);
+                        }
+                        hudgc.setStroke(Color.ORANGE);
+                        hudgc.strokeText(String.format("Winkel: %.2f", model.getLocalPlayer().getShoot().getAngle()), 200, 35);
+                        hudgc.setFill(Color.RED);
+                        hudgc.setFont(new Font("System", 24));
+                        hudgc.fillText(String.format("♥ %d", model.getLocalPlayer().getHealth()), 930, 35);
 
-                    drawBackground();
-                    drawPlayers();
-                    drawRockets();
-                    drawForground();
+                        drawBackground();
+                        drawPlayers();
+                        drawRockets();
+                        drawForground();
+                    }
                 });
             }
         }, 100, 10);
@@ -148,17 +152,17 @@ public class GamefieldController implements Initializable {
     }
 
     private void drawPlayers() {
-        if (model != null) {
+        if (model != null && model.getPlayers() != null) {
             for (Player p : model.getPlayers()) {
-                if (p != null) {
+                if (p != null && p.getPosition() != null) {
                     int x = p.getPosition().getxCoord();
                     int y = p.getPosition().getyCoord();
 
                     if (!p.isDead()) {
                         if (p.getShoot().getAngle() < 90 && p.getShoot().getAngle() > -90) {
-                            gc.drawImage(new Image(String.format("/images/worms/Rworm%d.png",p.getWormSkin())), x - 4, y - 16, 8, 16);
+                            gc.drawImage(new Image(String.format("/images/worms/Rworm%d.png", p.getWormSkin())), x - 4, y - 16, 8, 16);
                         } else {
-                            gc.drawImage(new Image(String.format("/images/worms/worm%d.png",p.getWormSkin())), x - 4, y - 16, 8, 16);
+                            gc.drawImage(new Image(String.format("/images/worms/worm%d.png", p.getWormSkin())), x - 4, y - 16, 8, 16);
                         }
                     } else {
                         gc.drawImage(new Image("/images/grave.png"), x - 4, y - 12, 8, 12);
@@ -216,11 +220,13 @@ public class GamefieldController implements Initializable {
             }
         }
         //Localplayersign
-        if (!model.getCurrentPlayer().equals(model.getLocalPlayer()))
-            gc.drawImage(new Image("/images/current_arrow.png"), model.getCurrentPlayer().getPosition().getxCoord() - 6,
-                    model.getCurrentPlayer().getPosition().getyCoord() - 70, 11, 10);
-        gc.drawImage(new Image("/images/local_arrow.png"), model.getLocalPlayer().getPosition().getxCoord() - 6,
-                model.getLocalPlayer().getPosition().getyCoord() - 70, 11, 10);
+        if (model.getCurrentPlayer() != null && model.getCurrentPlayer().getPosition() != null)
+            if (!model.getCurrentPlayer().equals(model.getLocalPlayer()))
+                gc.drawImage(new Image("/images/current_arrow.png"), model.getCurrentPlayer().getPosition().getxCoord() - 6,
+                        model.getCurrentPlayer().getPosition().getyCoord() - 70, 11, 10);
+        if (model.getLocalPlayer() != null && model.getLocalPlayer().getPosition() != null)
+            gc.drawImage(new Image("/images/local_arrow.png"), model.getLocalPlayer().getPosition().getxCoord() - 6,
+                    model.getLocalPlayer().getPosition().getyCoord() - 70, 11, 10);
 
 
         if (model.getCurrentPlayer() != null) {

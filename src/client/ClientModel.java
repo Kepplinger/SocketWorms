@@ -42,24 +42,30 @@ public class ClientModel extends Observable {
                 Socket csocket = null;
                 try {
                     //System.out.println("Neue Datenabfrage");
-                    csocket = new Socket();
-                    csocket.connect(new InetSocketAddress(getServerIP(), 7918), 10000);
-                    ObjectOutputStream out = new ObjectOutputStream(csocket.getOutputStream());
+                    if (getServerIP() != null) {
+                        csocket = new Socket();
+                        csocket.connect(new InetSocketAddress(getServerIP(), 7918), 10000);
+                        ObjectOutputStream out = new ObjectOutputStream(csocket.getOutputStream());
 
-                    out.writeObject("UpdateRequest" + (world == null ? "+WorldRequest" : ""));
-                    ObjectInputStream in = new ObjectInputStream(csocket.getInputStream());
-                    if (world == null) {
-                        world = (GameWorld) in.readObject();
+                        out.writeObject("UpdateRequest" + (world == null ? "+WorldRequest" : ""));
+                        ObjectInputStream in = new ObjectInputStream(csocket.getInputStream());
+                        if (world == null) {
+                            world = (GameWorld) in.readObject();
+                        }
+                        otherPlayers = (List<Player>) in.readObject();
+                        if (otherPlayers.size() > 0 && otherPlayers.contains(localPlayer)) {
+                            localPlayer = otherPlayers.get(otherPlayers.indexOf(localPlayer));
+                            otherPlayers.remove(otherPlayers.indexOf(localPlayer));
+                            currentPlayer = (Player) in.readObject();
+                            //System.out.println("Daten aktualisiert");
+                            csocket.close();
+                        }
+                        else {
+                            sendData();
+                        }
                     }
-                    otherPlayers = (List<Player>) in.readObject();
-                    localPlayer = otherPlayers.get(otherPlayers.indexOf(localPlayer));
-                    otherPlayers.remove(otherPlayers.indexOf(localPlayer));
-                    currentPlayer = (Player) in.readObject();
-
-                    //System.out.println("Daten aktualisiert");
-                    csocket.close();
                 } catch (SocketTimeoutException e) {
-                    new Alert(Alert.AlertType.WARNING,"Keine Antwort vom Server!", ButtonType.OK).showAndWait();
+                    new Alert(Alert.AlertType.WARNING, "Keine Antwort vom Server!", ButtonType.OK).showAndWait();
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 } catch (ClassNotFoundException e) {

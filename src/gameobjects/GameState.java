@@ -28,20 +28,23 @@ public class GameState implements Serializable {
         return teamA.size() == teamB.size() && teamA.size() > 0 && teamB.size() > 0;
     }
 
-    public void join(Player newPlayer) {
-        players.add(newPlayer);
-
-        Random random = new Random();
-        int x = random.nextInt(1000) + 20;
-        newPlayer.setPosition(new Point(x, 20));
+    public synchronized void join(Player newPlayer) {
+        if (players.size() == 0 || !players.contains(newPlayer)) {
 
 
-        if (teamA.size() <= teamB.size()) {
-            newPlayer.setTeam("A");
-            teamA.put(newPlayer.getName(), newPlayer);
-        } else {
-            newPlayer.setTeam("B");
-            teamB.put(newPlayer.getName(), newPlayer);
+            Random random = new Random();
+            int x = random.nextInt(1000) + 20;
+            newPlayer.setPosition(new Point(x, 20));
+
+
+            if (teamA.size() <= teamB.size()) {
+                newPlayer.setTeam("A");
+                teamA.put(newPlayer.getName(), newPlayer);
+            } else {
+                newPlayer.setTeam("B");
+                teamB.put(newPlayer.getName(), newPlayer);
+            }
+            players.add(newPlayer);
         }
     }
 
@@ -56,12 +59,12 @@ public class GameState implements Serializable {
         if (left_TeamA == null || left_TeamB == null || (left_TeamB.size() == 0 && left_TeamA.size() == 0))
             newRound();
 
-        for(Player p:left_TeamA){
-            if(p!=null&&p.isDead())
+        for (Player p : left_TeamA) {
+            if (p != null && p.isDead())
                 left_TeamA.remove(p);
         }
-        for(Player p:left_TeamB){
-            if(p!=null&&p.isDead())
+        for (Player p : left_TeamB) {
+            if (p != null && p.isDead())
                 left_TeamB.remove(p);
         }
 
@@ -74,5 +77,15 @@ public class GameState implements Serializable {
         }
         next.setCurrent(true);
         return next;
+    }
+    public void printTeams(){
+        System.out.println("TeamA:");
+        for(Player p:teamA.values()){
+            System.out.println("\t"+p.getName());
+        }
+        System.out.println("TeamB:");
+        for(Player p:teamB.values()){
+            System.out.println("\t"+p.getName());
+        }
     }
 }
