@@ -88,24 +88,23 @@ public class ServerModel {
                             if (receivedP instanceof UpdateInformation) {
                                 //TODO
                                 //Client will Daten
-                                if(receivedP.equals(UpdateInformation.Player)){
-                                    out.writeObject(new Package(changedPlayers(),null,currentPlayer));
-                                }
-                                else if(receivedP.equals(UpdateInformation.World)){
-                                    out.writeObject(new Package(null,world,currentPlayer));
-                                }
-                                else if(receivedP.equals(UpdateInformation.World_a_Player)){
-                                    out.writeObject(new Package(changedPlayers(),world,currentPlayer));
+                                if (receivedP.equals(UpdateInformation.Player)) {
+                                    out.writeObject(new Package(changedPlayers(), null, currentPlayer));
+                                } else if (receivedP.equals(UpdateInformation.World)) {
+                                    out.writeObject(new Package(null, world, currentPlayer));
+                                } else if (receivedP.equals(UpdateInformation.World_a_Player)) {
+                                    out.writeObject(new Package(changedPlayers(), world, currentPlayer));
                                 }
                             } else if (receivedP instanceof Player) {
                                 //Client schickt Daten
                                 Player pCL = (Player) receivedP;
                                 if (players.contains(pCL)) {
-                                    currentPlayer = pCL;
-                                    currentShoot = pCL.getShoot();
-                                    players.remove(players.indexOf(pCL));
-                                    players.add(pCL);
-                                    //System.out.println(players.get(players.indexOf(pCL))); Gesendeter Spieler
+                                    if (pCL.equals(currentPlayer)) {
+                                        currentPlayer = pCL;
+                                        currentShoot = pCL.getShoot();
+                                        players.set(players.indexOf(pCL), pCL);
+                                        //System.out.println(players.get(players.indexOf(pCL))); //Gesendeter Spieler
+                                    }
                                 } else {
                                     System.out.println("[Server] Der Spieler ist nicht vorhanden!");
                                     state.join(pCL);

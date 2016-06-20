@@ -29,6 +29,7 @@ public class ClientModel extends Observable {
     private List<Rocket> rockets;
     private GameWorld world;
 
+    int worldRequest = 16;
 
     private ClientModel() {
         otherPlayers = new LinkedList<>();
@@ -38,6 +39,7 @@ public class ClientModel extends Observable {
         t.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
+
                 Socket csocket = null;
                 try {
                     //System.out.println("Neue Datenabfrage");
@@ -48,7 +50,7 @@ public class ClientModel extends Observable {
 
                         synchronized (otherPlayers) {
 
-                            if (world == null && otherPlayers.size() == 0) {
+                            if (world == null && otherPlayers.size() == 0 || worldRequest == 0) {
                                 out.writeObject(UpdateInformation.World_a_Player);
                             } else if (world == null) {
                                 out.writeObject(UpdateInformation.World);
@@ -72,6 +74,7 @@ public class ClientModel extends Observable {
                                 sendData();
                             }
                         }
+                        //System.out.println("[Client] Daten empfangen.");
                     }
                 } catch (SocketTimeoutException e) {
                     new Alert(Alert.AlertType.WARNING, "Keine Antwort vom Server!", ButtonType.OK).showAndWait();
@@ -80,8 +83,11 @@ public class ClientModel extends Observable {
                 } catch (ClassNotFoundException e) {
                     e.printStackTrace();
                 }
+                worldRequest--;
+                if(worldRequest<0)
+                    worldRequest = 16;
             }
-        }, 0, 3);
+        }, 0, 20);
 
     }
 
@@ -141,17 +147,21 @@ public class ClientModel extends Observable {
     }
 
     public void sendData() {
-        Socket csocket = null;
-        try {
-            csocket = new Socket();
-            csocket.connect(new InetSocketAddress(getServerIP(), 7918), 10000);
-            ObjectOutputStream out = new ObjectOutputStream(csocket.getOutputStream());
+        Thread t = new Thread(() -> {
+            Socket csocket = null;
+            try {
+                csocket = new Socket();
+                csocket.connect(new InetSocketAddress(getServerIP(), 7918), 10000);
+                ObjectOutputStream out = new ObjectOutputStream(csocket.getOutputStream());
 
-            out.writeObject(getLocalPlayer());
-            System.out.println("[Client] Daten gesendet!");
-            csocket.close();
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
+                out.writeObject(getLocalPlayer());
+                //System.out.println("[Client] Daten gesendet!");
+                csocket.close();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        });
+        t.setDaemon(true);
+        t.start();
     }
 }

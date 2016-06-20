@@ -36,6 +36,7 @@ public class GameState implements Serializable {
             int x = random.nextInt(1000) + 20;
             newPlayer.setPosition(new Point(x, 20));
 
+            //System.out.println(newPlayer.getName()+" "+newPlayer.getPosition());
 
             if (teamA.size() <= teamB.size()) {
                 newPlayer.setTeam("A");
