@@ -15,6 +15,7 @@ public class GameState implements Serializable {
     private List<Player> left_TeamB;
 
     private List<Player> players;
+    private GameInfo info;
 
     int round = -1;
 
@@ -22,6 +23,7 @@ public class GameState implements Serializable {
         this.players = players;
         teamA = new HashMap<>();
         teamB = new HashMap<>();
+        info = new GameInfo();
     }
 
     public boolean readyToPlay() {
@@ -57,16 +59,20 @@ public class GameState implements Serializable {
 
     public Player nextPlayer() {
         Player next = null;
-        if (left_TeamA == null || left_TeamB == null || (left_TeamB.size() == 0 && left_TeamA.size() == 0))
+        if (left_TeamA == null || left_TeamB == null)
             newRound();
 
-        for (Player p : left_TeamA) {
-            if (p != null && p.isDead())
-                left_TeamA.remove(p);
-        }
-        for (Player p : left_TeamB) {
-            if (p != null && p.isDead())
-                left_TeamB.remove(p);
+        left_TeamA.removeAll(getDeadPlayer(teamA.values()));
+        left_TeamB.removeAll(getDeadPlayer(teamB.values()));
+
+        if((left_TeamB.size() == 0 || left_TeamA.size() == 0)){
+            if(left_TeamA.size()==0){
+                info.setPoints_b(info.getPoints_b()+1);
+            }
+            else{
+                info.setPoints_a(info.getPoints_a()+1);
+            }
+            newRound();
         }
 
         if (left_TeamA.size() >= left_TeamB.size()) {
@@ -88,5 +94,22 @@ public class GameState implements Serializable {
         for(Player p:teamB.values()){
             System.out.println("\t"+p.getName());
         }
+    }
+    private List<Player> getDeadPlayer(Collection<Player> plyrs){
+        List<Player> pl = new ArrayList<>();
+        for(Player p:players){
+            if(p.isDead()){
+                pl.add(p);
+            }
+        }
+        return pl;
+    }
+
+    public GameInfo getInfo(){
+        info.setPlayer_A_cnt(teamA.size());
+        info.setPlayer_B_cnt(teamB.size());
+        info.setCurDeaths_A(getDeadPlayer(teamA.values()).size());
+        info.setCurDeaths_B(getDeadPlayer(teamB.values()).size());
+        return info;
     }
 }

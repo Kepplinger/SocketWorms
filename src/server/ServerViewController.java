@@ -70,14 +70,20 @@ public class ServerViewController implements Initializable {
                             hudgc.fillText(String.format("%s: X:%d Y:%d   ∠ %.2f°    ♥ %d", model.getCurrentPlayer().getName(), model.getCurrentPlayer().getPosition().getxCoord(),
                                     model.getCurrentPlayer().getPosition().getyCoord(), model.getCurrentPlayer().getShoot().getAngle(), model.getCurrentPlayer().getHealth()), 250, 15);
                         }
+                    }
+                });
+                Thread background = new Thread(() -> {
+                    Platform.runLater(() -> {
                         drawBackground();
                         drawPlayers();
                         drawRockets();
                         drawForground();
-                    }
+                    });
                 });
+                background.setDaemon(true);
+                background.start();
             }
-        }, 100, 10);
+        }, 100, 50);
 
         //drawBackground();
         //drawPlayers();
@@ -88,7 +94,7 @@ public class ServerViewController implements Initializable {
         for (Player p : model.getOtherPlayers()) {
             if (p.getPosition() != null) {
                 if (!p.isDead()) {
-                    if (p.getTeam() != null && model.getCurrentPlayer().getTeam() != null && !p.getTeam().equals(model.getCurrentPlayer().getTeam())) {
+                    if (p.getTeam() != null && model.getCurrentPlayer() != null && model.getCurrentPlayer().getTeam() != null && !p.getTeam().equals(model.getCurrentPlayer().getTeam())) {
                         gc.drawImage(new Image("/images/enemy_arrow.png"), p.getPosition().getxCoord() - 6,
                                 p.getPosition().getyCoord() - 70, 11, 10);
                     }

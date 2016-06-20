@@ -18,6 +18,7 @@ public class Player implements Serializable {
     private Shoot ownShoot;
     private boolean isCurrent;
     private String team;
+    private boolean dead = false;
 
     private int wormSkin = 0;
 
@@ -53,6 +54,7 @@ public class Player implements Serializable {
         if (position != null) {
             if (getDistance(gameWorld.getNearestPoint(position), position) > 3) {
                 position.setyCoord(position.getyCoord() + 5);
+                //fallingspeed += 5;
             }
             if (position.getyCoord() > 576)
                 removeHealth(100);
@@ -61,6 +63,11 @@ public class Player implements Serializable {
                 Point point = gameWorld.getNearestPoint(position);
                 point.setyCoord(point.getyCoord() - 2);
                 position = point;
+                /*
+                if (fallingspeed > 25) {
+                    removeHealth((fallingspeed / 200) * 100);
+                }
+                fallingspeed = 0;*/
             }
             changed = true;
         }
@@ -84,11 +91,9 @@ public class Player implements Serializable {
     }
 
     public boolean isDead() {
-        if (health<=0 || position.getyCoord()>576)
-        {
+        if (health <= 0 || position.getyCoord() > 576) {
             return true;
-        }
-        else {
+        } else {
             return false;
         }
     }
@@ -151,6 +156,20 @@ public class Player implements Serializable {
                 position.setChanged(false);
             if (ownShoot != null)
                 ownShoot.setChanged(false);
+        }
+    }
+
+    /***
+     * Heals the Player
+     */
+    public void heal(int hp) {
+        if (hp < 0)
+            throw new IllegalArgumentException("Der Spieler wird nicht geheilt!");
+
+        if (hp >= 100) {
+            health = 100;
+        } else {
+            health += hp;
         }
     }
 

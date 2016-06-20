@@ -130,12 +130,6 @@ public class ClientModel extends Observable {
         return world;
     }
 
-    public void applyPhysics() {
-        for (Player p : getPlayers()) {
-            p.applyPhysics(world);
-        }
-    }
-
     public List<Player> getPlayers() {
         List<Player> players = new ArrayList<>(getOtherPlayers());
         players.add(getLocalPlayer());

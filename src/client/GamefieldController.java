@@ -99,12 +99,6 @@ public class GamefieldController implements Initializable {
                     hudgc.setStroke(Color.BLACK);
                     hudgc.strokeRoundRect(10, 10, 104, 24, 5, 5);
 
-                    if (model.getOtherPlayers().size() <= 0) {
-                        gc.drawImage(new Image(getClass().getResource("/images/wait.png").toExternalForm()),250,250,248,248);
-                    }
-                    else {
-                        gc.clearRect(250,250,300,300);
-                    }
 
                     if (model.getCurrentPlayer() != null && model.getLocalPlayer() != null) {
                         hudgc.setFill(Color.DARKRED);
@@ -122,15 +116,20 @@ public class GamefieldController implements Initializable {
                         hudgc.setFill(Color.RED);
                         hudgc.setFont(new Font("System", 24));
                         hudgc.fillText(String.format("♥ %d", model.getLocalPlayer().getHealth()), 930, 35);
-
+                    }
+                });
+                Thread background = new Thread(() -> {
+                    Platform.runLater(() -> {
                         drawBackground();
                         drawPlayers();
                         drawRockets();
                         drawForground();
-                    }
+                    });
                 });
+                background.setDaemon(true);
+                background.start();
             }
-        }, 100, 10);
+        }, 100, 20);
     }
 
     private void drawRockets() {
@@ -208,65 +207,69 @@ public class GamefieldController implements Initializable {
     }
 
     private void drawForground() {
-        //gc.clearRect(0, 0, canvas.getWidth(), canvas.getWidth());
-        for (Player p : model.getOtherPlayers()) {
-            if (p != null && p.getPosition() != null) {
-                if (!p.isDead()) {
-                    if (p.getTeam() != null && model.getLocalPlayer().getTeam() != null && !p.getTeam().equals(model.getLocalPlayer().getTeam())) {
-                        gc.drawImage(new Image("/images/enemy_arrow.png"), p.getPosition().getxCoord() - 6,
-                                p.getPosition().getyCoord() - 70, 11, 10);
+        if (model.getOtherPlayers().size() <= 0 || model.getOtherPlayers().size() % 2 == 0) {
+            gc.drawImage(new Image("/images/wait.png"), 384, 160, 256, 256);
+            gc.setFont(new Font("System",18));
+            gc.fillText("Warte auf Spieler...", 515 - getStringWidth("Warte auf Spieler...", new Font("System", 18)) / 2, 420);
+        } else {
+            for (Player p : model.getOtherPlayers()) {
+                if (p != null && p.getPosition() != null) {
+                    if (!p.isDead()) {
+                        if (p.getTeam() != null && model.getLocalPlayer().getTeam() != null && !p.getTeam().equals(model.getLocalPlayer().getTeam())) {
+                            gc.drawImage(new Image("/images/enemy_arrow.png"), p.getPosition().getxCoord() - 6,
+                                    p.getPosition().getyCoord() - 70, 11, 10);
+                        }
+                        gc.setFill(Color.BLACK);
+                        gc.setFont(new Font("System", 12));
+                        gc.fillText(p.getName(), p.getPosition().getxCoord() - (getStringWidth(p.getName(), new Font("System", 12)) / 2), p.getPosition().getyCoord() - 45);
+                        gc.setFill(Color.RED);
+                        gc.setFont(new Font("System", 10));
+                        gc.fillText(String.format("%d%%", p.getHealth()), p.getPosition().getxCoord() -
+                                (getStringWidth(String.format("%d%%", p.getHealth()), new Font("System", 10)) / 2), p.getPosition().getyCoord() - 30);
+                    } else {
+                        gc.setFill(Color.RED);
+                        gc.setFont(new Font("System", 10));
+                        gc.fillText(p.getName(), p.getPosition().getxCoord() - (getStringWidth(p.getName(), new Font("System", 10)) / 2), p.getPosition().getyCoord() - 15);
                     }
-                    gc.setFill(Color.BLACK);
-                    gc.setFont(new Font("System", 12));
-                    gc.fillText(p.getName(), p.getPosition().getxCoord() - (getStringWidth(p.getName(), new Font("System", 12)) / 2), p.getPosition().getyCoord() - 45);
-                    gc.setFill(Color.RED);
-                    gc.setFont(new Font("System", 10));
-                    gc.fillText(String.format("%d%%", p.getHealth()), p.getPosition().getxCoord() -
-                            (getStringWidth(String.format("%d%%", p.getHealth()), new Font("System", 10)) / 2), p.getPosition().getyCoord() - 30);
-                } else {
-                    gc.setFill(Color.RED);
-                    gc.setFont(new Font("System", 10));
-                    gc.fillText(p.getName(), p.getPosition().getxCoord() - (getStringWidth(p.getName(), new Font("System", 10)) / 2), p.getPosition().getyCoord() - 15);
                 }
             }
-        }
-        //Localplayersign
-        if (model.getCurrentPlayer() != null && model.getCurrentPlayer().getPosition() != null)
-            if (!model.getCurrentPlayer().equals(model.getLocalPlayer()))
-                gc.drawImage(new Image("/images/current_arrow.png"), model.getCurrentPlayer().getPosition().getxCoord() - 6,
-                        model.getCurrentPlayer().getPosition().getyCoord() - 70, 11, 10);
-        if (model.getLocalPlayer() != null && model.getLocalPlayer().getPosition() != null)
-            gc.drawImage(new Image("/images/local_arrow.png"), model.getLocalPlayer().getPosition().getxCoord() - 6,
-                    model.getLocalPlayer().getPosition().getyCoord() - 70, 11, 10);
+            //Localplayersign
+            if (model.getCurrentPlayer() != null && model.getCurrentPlayer().getPosition() != null)
+                if (!model.getCurrentPlayer().equals(model.getLocalPlayer()))
+                    gc.drawImage(new Image("/images/current_arrow.png"), model.getCurrentPlayer().getPosition().getxCoord() - 6,
+                            model.getCurrentPlayer().getPosition().getyCoord() - 70, 11, 10);
+            if (model.getLocalPlayer() != null && model.getLocalPlayer().getPosition() != null)
+                gc.drawImage(new Image("/images/local_arrow.png"), model.getLocalPlayer().getPosition().getxCoord() - 6,
+                        model.getLocalPlayer().getPosition().getyCoord() - 70, 11, 10);
 
 
-        if (model.getCurrentPlayer() != null && model.getCurrentPlayer().getPosition() != null) {
-            //Targetmarker
-            int x = model.getCurrentPlayer().getPosition().getxCoord();
-            int y = model.getCurrentPlayer().getPosition().getyCoord();
+            if (model.getCurrentPlayer() != null && model.getCurrentPlayer().getPosition() != null) {
+                //Targetmarker
+                int x = model.getCurrentPlayer().getPosition().getxCoord();
+                int y = model.getCurrentPlayer().getPosition().getyCoord();
 
-            double angle360 = 0;
-            double a = 0;
-            double b = 0;
-            double curAngle = model.getCurrentPlayer().getShoot().getAngle();
+                double angle360 = 0;
+                double a = 0;
+                double b = 0;
+                double curAngle = model.getCurrentPlayer().getShoot().getAngle();
 
-            if (curAngle > 0) {
-                angle360 = curAngle;
-                a = Math.sin(Math.toRadians(curAngle)) * 50;
-                b = Math.cos(Math.toRadians(curAngle)) * 50;
-            } else if (curAngle < 0) {
-                angle360 = (180 - (curAngle * -1)) + 180;
-                a = Math.sin(Math.toRadians(angle360)) * 50;
-                b = Math.cos(Math.toRadians(angle360)) * 50;
+                if (curAngle > 0) {
+                    angle360 = curAngle;
+                    a = Math.sin(Math.toRadians(curAngle)) * 50;
+                    b = Math.cos(Math.toRadians(curAngle)) * 50;
+                } else if (curAngle < 0) {
+                    angle360 = (180 - (curAngle * -1)) + 180;
+                    a = Math.sin(Math.toRadians(angle360)) * 50;
+                    b = Math.cos(Math.toRadians(angle360)) * 50;
+                }
+                gc.setFill(Color.BLACK);
+                gc.fillOval(x + b - 4, y - a - 4, 8, 8);
+                gc.setFill(Color.GOLD);
+                gc.fillOval(x + b - 3, y - a - 3, 6, 6);
+                //gc.drawImage(new Image("/images/crossfade.png"), mouse.getxCoord() - 11, mouse.getyCoord() - 11, 21, 21);
+
             }
-            gc.setFill(Color.BLACK);
-            gc.fillOval(x + b - 4, y - a - 4, 8, 8);
-            gc.setFill(Color.GOLD);
-            gc.fillOval(x + b - 3, y - a - 3, 6, 6);
-            //gc.drawImage(new Image("/images/crossfade.png"), mouse.getxCoord() - 11, mouse.getyCoord() - 11, 21, 21);
-
         }
-
     }
 
     public double getStringWidth(String text, Font font) {

@@ -89,11 +89,11 @@ public class ServerModel {
                                 //TODO
                                 //Client will Daten
                                 if (receivedP.equals(UpdateInformation.Player)) {
-                                    out.writeObject(new Package(changedPlayers(), null, currentPlayer));
+                                    out.writeObject(new Package(state.getInfo(),changedPlayers(), null, currentPlayer));
                                 } else if (receivedP.equals(UpdateInformation.World)) {
-                                    out.writeObject(new Package(null, world, currentPlayer));
+                                    out.writeObject(new Package(state.getInfo(),null, world, currentPlayer));
                                 } else if (receivedP.equals(UpdateInformation.World_a_Player)) {
-                                    out.writeObject(new Package(changedPlayers(), world, currentPlayer));
+                                    out.writeObject(new Package(state.getInfo(),changedPlayers(), world, currentPlayer));
                                 }
                             } else if (receivedP instanceof Player) {
                                 //Client schickt Daten
@@ -143,7 +143,7 @@ public class ServerModel {
             if (explosion != null) {
                 getRockets().remove(r);
                 explosion.calculateDamage(getPlayers());
-                getWorld().destroySurface(explosion);
+                //getWorld().destroySurface(explosion);
             }
         }
     }

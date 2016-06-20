@@ -8,11 +8,13 @@ import java.util.List;
  * Created by Andreas on 20.06.2016.
  */
 public class Package implements Serializable {
-    List<Player> changedPlayers;
-    GameWorld world;
-    Player current;
+    private GameInfo info;
+    private List<Player> changedPlayers;
+    private GameWorld world;
+    private Player current;
 
-    public Package(List<Player> changedPlayers, GameWorld world,Player current) {
+    public Package(GameInfo info, List<Player> changedPlayers, GameWorld world, Player current) {
+        this.info = info;
         this.changedPlayers = changedPlayers;
         this.world = world;
         this.current = current;
@@ -24,6 +26,10 @@ public class Package implements Serializable {
 
     public Player getCurrentPlayer() {
         return current;
+    }
+
+    public GameInfo getInfo() {
+        return info;
     }
 
     public List<Player> updatePlayerList(List<Player> listToUpdate){
