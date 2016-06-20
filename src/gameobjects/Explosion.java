@@ -33,18 +33,13 @@ public class Explosion {
     }
 
     public boolean contains(Point point) {
-        int i;
-        int j;
 
-        boolean result = false;
-
-        for (i = 0, j = border.length - 1; i < border.length; j = i++) {
-            if ((border[i].getyCoord() > point.getyCoord()) != (border[j].getyCoord() > point.getyCoord()) &&
-                    (point.getxCoord() < (border[j].getxCoord() - border[i].getxCoord()) * (point.getyCoord() - border[i].getyCoord()) / (border[j].getyCoord() - border[i].getyCoord()) + border[i].getxCoord())) {
-                result = !result;
-            }
+        if (getDistance(center, point) < GameWorld.EXPLOSIONRADIUS) {
+            return true;
+        } else {
+            return false;
         }
-        return result;
+
     }
 
     public int getIndexofNearestPoint(Point point) {
@@ -62,17 +57,18 @@ public class Explosion {
         return index;
     }
 
-    private boolean containsPlayer(Player p){
+    private boolean containsPlayer(Player p) {
         return true;
     }
 
-    public void calculateDamage(List<Player> players){
-        for(Player p:players){
-            if(contains(p.getPosition())){
-                p.removeHealth((int) (GameWorld.EXPLOSIONRADIUS-getDistance(p.getPosition(),center)));
+    public void calculateDamage(List<Player> players) {
+        for (Player p : players) {
+            if (contains(p.getPosition())) {
+                p.removeHealth((int) (GameWorld.EXPLOSIONRADIUS - getDistance(p.getPosition(), center)));
             }
         }
     }
+
     private double getDistance(Point point1, Point point2) {
         return Math.sqrt(Math.pow(Math.abs(point1.getxCoord() - point2.getxCoord()), 2) + Math.pow(Math.abs(point1.getyCoord() - point2.getyCoord()), 2));
     }

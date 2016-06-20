@@ -94,6 +94,10 @@ public class GameWorld implements Serializable{
 
         getGameWorld().add(new Surface(generatedWorld));
         worldChanged=true;
+
+        for (Point point : getGameWorld().get(0).getBorder()){
+            System.out.println(point.getxCoord() + " / " + point.getyCoord());
+        }
     }
 
     /**
@@ -155,15 +159,18 @@ public class GameWorld implements Serializable{
 
                     /*
                     * Es wird nach einem Punkte gesucht der als Anfangspunkt einer neuen Oberfläche dient.
-                    * Dieser Punkte ist nur vorhanden, falls es eine neue "schwebende" Oberffläche gibt.
+                    * Dieser Punkte ist nur vorhanden, falls es eine neue "schwebende" Oberfläche gibt.
                     */
                     if (newSurfaceInitial == -1 && surface.contains(explosion.getBorder()[index % explosion.getBorder().length])) {
 
                         newSurfaceInitial = surface.getIndexofNearestPoint(explosion.getBorder()[index % explosion.getBorder().length]);
 
                          /* Der newSurfaceInitial-Punkt wird auf einen Punkt gebracht der sich in der Explosion befindet */
-                        while (!explosion.contains(surface.getBorder().get(newSurfaceInitial)) && surface.getBorder().size() > newSurfaceInitial + 1)
+                        int cnt = 0;    //Counter für Fehlervermeidung
+                        while (!explosion.contains(surface.getBorder().get(newSurfaceInitial)) && surface.getBorder().size() > newSurfaceInitial + 1 && cnt < 5) {
                             newSurfaceInitial++;
+                            cnt++;
+                        }
                     }
 
                     /* Alle Grenzpunkte der Explosion werden zur Oberfläche hinzugefügt */
