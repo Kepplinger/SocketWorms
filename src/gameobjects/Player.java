@@ -21,13 +21,16 @@ public class Player implements Serializable {
 
     private int wormSkin = 0;
 
+    private boolean changed = false;
+
     public Player(String playername) {
         name = playername;
         fallingspeed = 0;
         health = 100;
         setWormSkin(new Random().nextInt(WORM_SKINS));
     }
-    public Player(String playername,int skin) {
+
+    public Player(String playername, int skin) {
         name = playername;
         fallingspeed = 0;
         health = 100;
@@ -47,20 +50,23 @@ public class Player implements Serializable {
     }
 
     public void applyPhysics(GameWorld gameWorld) {
-        if (getDistance(gameWorld.getNearestPoint(position),position) > 3) {
-            position.setyCoord(position.getyCoord() + 5);
-        }
-        if(position.getyCoord()>576)
-            removeHealth(100);
+        if (position != null) {
+            if (getDistance(gameWorld.getNearestPoint(position), position) > 3) {
+                position.setyCoord(position.getyCoord() + 5);
+            }
+            if (position.getyCoord() > 576)
+                removeHealth(100);
 
-        if (!isDead() && gameWorld.containsPoint(position)){
-            Point point = gameWorld.getNearestPoint(position);
-            point.setyCoord(point.getyCoord() - 2);
-            position = point;
+            if (!isDead() && gameWorld.containsPoint(position)) {
+                Point point = gameWorld.getNearestPoint(position);
+                point.setyCoord(point.getyCoord() - 2);
+                position = point;
+            }
+            changed = true;
         }
     }
 
-    public void movePlayer(int value){
+    public void movePlayer(int value) {
         position.setxCoord(position.getxCoord() + value);
     }
 
@@ -73,23 +79,24 @@ public class Player implements Serializable {
     }
 
     public void removeHealth(int removedHealth) {
-        this.health = health-removedHealth;
+        this.health = health - removedHealth;
+        changed = true;
     }
 
-    public boolean isDead(){
-        return health<=0;
+    public boolean isDead() {
+        return health <= 0;
     }
 
     public Shoot getShoot() {
-        if(ownShoot==null){
-            ownShoot = new Shoot(0.5,50,false);
+        if (ownShoot == null) {
+            ownShoot = new Shoot(0.5, 50, false);
         }
         return ownShoot;
     }
 
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof Player && ((Player)obj).getName().equals(this.getName());
+        return obj instanceof Player && ((Player) obj).getName().equals(this.getName());
     }
 
     @Override
@@ -124,10 +131,24 @@ public class Player implements Serializable {
     }
 
     public void setWormSkin(int wormSkin) {
-        if(wormSkin >= WORM_SKINS)
-            throw new IllegalArgumentException(String.format("Es gibt nur [%d] Skins. Erhaltener Wert: %d",WORM_SKINS,wormSkin));
-        if(wormSkin < 0)
-            throw new IllegalArgumentException(String.format("Negativer Wert. Erhaltener Wert: %d",wormSkin));
+        if (wormSkin >= WORM_SKINS)
+            throw new IllegalArgumentException(String.format("Es gibt nur [%d] Skins. Erhaltener Wert: %d", WORM_SKINS, wormSkin));
+        if (wormSkin < 0)
+            throw new IllegalArgumentException(String.format("Negativer Wert. Erhaltener Wert: %d", wormSkin));
         this.wormSkin = wormSkin;
+    }
+
+    public void setChanged(boolean changed) {
+        this.changed = changed;
+        if (changed == false) {
+            if (position != null)
+                position.setChanged(false);
+            if (ownShoot != null)
+                ownShoot.setChanged(false);
+        }
+    }
+
+    public boolean hasChanged() {
+        return changed;
     }
 }
