@@ -26,6 +26,7 @@
                      </image>
                   </ImageView>
                   <Canvas fx:id="canvas_gamefield" focusTraversable="true" height="576.0" width="1024.0" />
+                  <Canvas fx:id="canvas_player" focusTraversable="true" height="576.0" width="1024.0" />
                   <Canvas fx:id="canvas" focusTraversable="true" height="576.0" width="1024.0" />
                </children>
             </StackPane>

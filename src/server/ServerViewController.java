@@ -59,14 +59,17 @@ public class ServerViewController implements Initializable {
                     hudgc.strokeRoundRect(10, 10, 104, 24, 5, 5);
 
                     if (model.getCurrentPlayer() != null) {
-                        hudgc.setFill(Color.DARKRED);
-                        hudgc.fillRoundRect(12, 12, model.getCurrentPlayer().getShoot().getCurrentSpeed() * 100, 20, 5, 5);
-                        hudgc.setStroke(Color.WHITE);
-                        hudgc.strokeText(String.format("%d%%", (int) (model.getCurrentPlayer().getShoot().getCurrentSpeed() * 100)), 49, 26);
-
-                        hudgc.setFill(Color.ORANGE);
-                        hudgc.fillText(String.format("%s: X:%d Y:%d   ∠ %.2f°    ♥ %d", model.getCurrentPlayer().getName(), model.getCurrentPlayer().getPosition().getxCoord(),
-                                model.getCurrentPlayer().getPosition().getyCoord(), model.getCurrentPlayer().getShoot().getAngle(), model.getCurrentPlayer().getHealth()), 250, 15);
+                        if (model.getCurrentPlayer().getShoot() != null) {
+                            hudgc.setFill(Color.DARKRED);
+                            hudgc.fillRoundRect(12, 12, model.getCurrentPlayer().getShoot().getCurrentSpeed() * 100, 20, 5, 5);
+                            hudgc.setStroke(Color.WHITE);
+                            hudgc.strokeText(String.format("%d%%", (int) (model.getCurrentPlayer().getShoot().getCurrentSpeed() * 100)), 49, 26);
+                        }
+                        if (model.getCurrentPlayer().getPosition() != null) {
+                            hudgc.setFill(Color.ORANGE);
+                            hudgc.fillText(String.format("%s: X:%d Y:%d   ∠ %.2f°    ♥ %d", model.getCurrentPlayer().getName(), model.getCurrentPlayer().getPosition().getxCoord(),
+                                    model.getCurrentPlayer().getPosition().getyCoord(), model.getCurrentPlayer().getShoot().getAngle(), model.getCurrentPlayer().getHealth()), 250, 15);
+                        }
                         drawBackground();
                         drawPlayers();
                         drawRockets();
@@ -83,26 +86,28 @@ public class ServerViewController implements Initializable {
 
     private void drawForground() {
         for (Player p : model.getOtherPlayers()) {
-            if (!p.isDead()) {
-                if (!p.getTeam().equals(model.getCurrentPlayer().getTeam())) {
-                    gc.drawImage(new Image("/images/enemy_arrow.png"), p.getPosition().getxCoord() - 6,
-                            p.getPosition().getyCoord() - 70, 11, 10);
+            if (p.getPosition() != null) {
+                if (!p.isDead()) {
+                    if (p.getTeam() != null && model.getCurrentPlayer().getTeam() != null && !p.getTeam().equals(model.getCurrentPlayer().getTeam())) {
+                        gc.drawImage(new Image("/images/enemy_arrow.png"), p.getPosition().getxCoord() - 6,
+                                p.getPosition().getyCoord() - 70, 11, 10);
+                    }
+                    gc.setFill(Color.BLACK);
+                    gc.setFont(new Font("System", 14));
+                    gc.fillText(p.getName(), p.getPosition().getxCoord() - (getStringWidth(p.getName(), new Font("System", 14)) / 2), p.getPosition().getyCoord() - 45);
+                    gc.setFill(Color.RED);
+                    gc.setFont(new Font("System", 10));
+                    gc.fillText(String.format("%d%%", p.getHealth()), p.getPosition().getxCoord() -
+                            (getStringWidth(String.format("%d%%", p.getHealth()), new Font("System", 10)) / 2), p.getPosition().getyCoord() - 30);
+                } else {
+                    gc.setFill(Color.RED);
+                    gc.setFont(new Font("System", 10));
+                    gc.fillText(p.getName(), p.getPosition().getxCoord() - (getStringWidth(p.getName(), new Font("System", 10)) / 2), p.getPosition().getyCoord() - 15);
                 }
-                gc.setFill(Color.BLACK);
-                gc.setFont(new Font("System", 14));
-                gc.fillText(p.getName(), p.getPosition().getxCoord() - (getStringWidth(p.getName(), new Font("System", 14)) / 2), p.getPosition().getyCoord() - 45);
-                gc.setFill(Color.RED);
-                gc.setFont(new Font("System", 10));
-                gc.fillText(String.format("%d%%", p.getHealth()), p.getPosition().getxCoord() -
-                        (getStringWidth(String.format("%d%%", p.getHealth()), new Font("System", 10)) / 2), p.getPosition().getyCoord() - 30);
-            } else {
-                gc.setFill(Color.RED);
-                gc.setFont(new Font("System", 10));
-                gc.fillText(p.getName(), p.getPosition().getxCoord() - (getStringWidth(p.getName(), new Font("System", 10)) / 2), p.getPosition().getyCoord() - 15);
             }
         }
 
-        if (model.getCurrentPlayer() != null) {
+        if (model.getCurrentPlayer() != null && model.getCurrentPlayer().getPosition() != null) {
             //Targetmarker
             int x = model.getCurrentPlayer().getPosition().getxCoord();
             int y = model.getCurrentPlayer().getPosition().getyCoord();
@@ -143,17 +148,19 @@ public class ServerViewController implements Initializable {
     private void drawPlayers() {
         if (model != null) {
             for (Player p : model.getPlayers()) {
-                int x = p.getPosition().getxCoord();
-                int y = p.getPosition().getyCoord();
+                if (p.getPosition() != null) {
+                    int x = p.getPosition().getxCoord();
+                    int y = p.getPosition().getyCoord();
 
-                if (!p.isDead()) {
-                    if (p.getShoot().getAngle() < 90 && p.getShoot().getAngle() > -90) {
-                        gc.drawImage(new Image(String.format("/images/worms/Rworm%d.png", p.getWormSkin())), x - 4, y - 16, 8, 16);
+                    if (!p.isDead()) {
+                        if (p.getShoot().getAngle() < 90 && p.getShoot().getAngle() > -90) {
+                            gc.drawImage(new Image(String.format("/images/worms/Rworm%d.png", p.getWormSkin())), x - 4, y - 16, 8, 16);
+                        } else {
+                            gc.drawImage(new Image(String.format("/images/worms/worm%d.png", p.getWormSkin())), x - 4, y - 16, 8, 16);
+                        }
                     } else {
-                        gc.drawImage(new Image(String.format("/images/worms/worm%d.png", p.getWormSkin())), x - 4, y - 16, 8, 16);
+                        gc.drawImage(new Image("/images/grave.png"), x - 4, y - 12, 8, 12);
                     }
-                } else {
-                    gc.drawImage(new Image("/images/grave.png"), x - 4, y - 12, 8, 12);
                 }
             }
         }
@@ -161,7 +168,7 @@ public class ServerViewController implements Initializable {
 
     private void drawBackground() {
         if (model.getWorld().isWorldChanged()) {
-            model.getWorld().setWorldChanged();
+            //model.getWorld().setWorldChanged();
             GraphicsContext gcgf = canvas_gamefield.getGraphicsContext2D();
             gcgf.clearRect(0, 0, canvas_gamefield.getWidth(), canvas_gamefield.getHeight());
             for (Surface surface : model.getWorld().getGameWorld()) {

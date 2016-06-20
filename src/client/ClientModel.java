@@ -1,9 +1,7 @@
 package client;
 
-import gameobjects.GameWorld;
-import gameobjects.Player;
-import gameobjects.Point;
-import gameobjects.Rocket;
+import gameobjects.*;
+import gameobjects.Package;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 
@@ -31,6 +29,7 @@ public class ClientModel extends Observable {
     private List<Rocket> rockets;
     private GameWorld world;
 
+
     private ClientModel() {
         otherPlayers = new LinkedList<>();
         rockets = new LinkedList<>();
@@ -47,21 +46,31 @@ public class ClientModel extends Observable {
                         csocket.connect(new InetSocketAddress(getServerIP(), 7918), 10000);
                         ObjectOutputStream out = new ObjectOutputStream(csocket.getOutputStream());
 
-                        out.writeObject("UpdateRequest" + (world == null ? "+WorldRequest" : ""));
-                        ObjectInputStream in = new ObjectInputStream(csocket.getInputStream());
-                        if (world == null) {
-                            world = (GameWorld) in.readObject();
-                        }
-                        otherPlayers = (List<Player>) in.readObject();
-                        if (otherPlayers.size() > 0 && otherPlayers.contains(localPlayer)) {
-                            localPlayer = otherPlayers.get(otherPlayers.indexOf(localPlayer));
-                            otherPlayers.remove(otherPlayers.indexOf(localPlayer));
-                            currentPlayer = (Player) in.readObject();
-                            //System.out.println("Daten aktualisiert");
-                            csocket.close();
-                        }
-                        else {
-                            sendData();
+                        synchronized (otherPlayers) {
+
+                            if (world == null && otherPlayers.size() == 0) {
+                                out.writeObject(UpdateInformation.World_a_Player);
+                            } else if (world == null) {
+                                out.writeObject(UpdateInformation.World);
+                            } else {
+                                out.writeObject(UpdateInformation.Player);
+                            }
+                            ObjectInputStream in = new ObjectInputStream(csocket.getInputStream());
+
+                            Package p = (Package) in.readObject();
+                            if (p.getWorld() != null)
+                                world = p.getWorld();
+                            if (p.getCurrentPlayer() != null)
+                                currentPlayer = p.getCurrentPlayer();
+                            otherPlayers = p.updatePlayerList(otherPlayers);
+
+                            if (otherPlayers != null && otherPlayers.size() > 0 && otherPlayers.contains(localPlayer)) {
+                                localPlayer = otherPlayers.get(otherPlayers.indexOf(localPlayer));
+                                otherPlayers.remove(otherPlayers.indexOf(localPlayer));
+                            } else {
+                                csocket.close();
+                                sendData();
+                            }
                         }
                     }
                 } catch (SocketTimeoutException e) {
@@ -72,7 +81,7 @@ public class ClientModel extends Observable {
                     e.printStackTrace();
                 }
             }
-        }, 0, 5);
+        }, 0, 3);
 
     }
 
@@ -85,8 +94,10 @@ public class ClientModel extends Observable {
         this.localPlayer = player;
     }
 
-    public List<Player> getOtherPlayers() {
+    public synchronized List<Player> getOtherPlayers() {
         ArrayList<Player> pl = new ArrayList<>(otherPlayers);
+        if (pl.contains(localPlayer))
+            pl.remove(pl.indexOf(localPlayer));
         return pl;
     }
 
@@ -137,7 +148,7 @@ public class ClientModel extends Observable {
             ObjectOutputStream out = new ObjectOutputStream(csocket.getOutputStream());
 
             out.writeObject(getLocalPlayer());
-            //System.out.println("[Client] Daten gesendet!");
+            System.out.println("[Client] Daten gesendet!");
             csocket.close();
         } catch (IOException ex) {
             ex.printStackTrace();

@@ -70,7 +70,7 @@ public class Surface implements Serializable{
         int index = 0;
 
         for (int i = 0; i < border.size(); i++) {
-            if (border.get(i).getxCoord() > point.getxCoord() - 10 && border.get(i).getxCoord() < point.getxCoord() + 10 && border.get(i).getyCoord() > point.getyCoord() - 10 && border.get(i).getyCoord() < point.getyCoord() + 10 && smallestDistance > getDistance(border.get(i), point)) {
+            if (smallestDistance > getDistance(border.get(i), point)) {
                 smallestDistance = getDistance(border.get(i), point);
                 index = i;
             }

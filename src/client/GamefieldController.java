@@ -33,6 +33,7 @@ public class GamefieldController implements Initializable {
 
     @FXML
     public Canvas canvas_gamefield;
+    public Canvas canvas_player;
     @FXML
     private Canvas canvas;
     @FXML
@@ -152,6 +153,8 @@ public class GamefieldController implements Initializable {
     }
 
     private void drawPlayers() {
+        GraphicsContext gcPl = canvas_player.getGraphicsContext2D();
+        gcPl.clearRect(0, 0, canvas.getWidth(), canvas.getWidth());
         if (model != null && model.getPlayers() != null) {
             for (Player p : model.getPlayers()) {
                 if (p != null && p.getPosition() != null) {
@@ -160,12 +163,12 @@ public class GamefieldController implements Initializable {
 
                     if (!p.isDead()) {
                         if (p.getShoot().getAngle() < 90 && p.getShoot().getAngle() > -90) {
-                            gc.drawImage(new Image(String.format("/images/worms/Rworm%d.png", p.getWormSkin())), x - 4, y - 16, 8, 16);
+                            gcPl.drawImage(new Image(String.format("/images/worms/Rworm%d.png", p.getWormSkin())), x - 4, y - 16, 8, 16);
                         } else {
-                            gc.drawImage(new Image(String.format("/images/worms/worm%d.png", p.getWormSkin())), x - 4, y - 16, 8, 16);
+                            gcPl.drawImage(new Image(String.format("/images/worms/worm%d.png", p.getWormSkin())), x - 4, y - 16, 8, 16);
                         }
                     } else {
-                        gc.drawImage(new Image("/images/grave.png"), x - 4, y - 12, 8, 12);
+                        gcPl.drawImage(new Image("/images/grave.png"), x - 4, y - 12, 8, 12);
                     }
                 }
             }
@@ -175,7 +178,7 @@ public class GamefieldController implements Initializable {
 
     private void drawBackground() {
         if (model.getWorld() != null) {
-            if (true || ClientModel.getInstance().getWorld().isWorldChanged()) {
+            if (ClientModel.getInstance().getWorld().isWorldChanged()) {
                 //System.out.println("[Client] Welt gezeichnet!");
                 ClientModel.getInstance().getWorld().setWorldChanged();
                 GraphicsContext gcgf = canvas_gamefield.getGraphicsContext2D();
@@ -198,10 +201,11 @@ public class GamefieldController implements Initializable {
     }
 
     private void drawForground() {
+        //gc.clearRect(0, 0, canvas.getWidth(), canvas.getWidth());
         for (Player p : model.getOtherPlayers()) {
-            if (p != null) {
+            if (p != null && p.getPosition() != null) {
                 if (!p.isDead()) {
-                    if (!p.getTeam().equals(model.getLocalPlayer().getTeam())) {
+                    if (p.getTeam() != null && model.getLocalPlayer().getTeam() != null && !p.getTeam().equals(model.getLocalPlayer().getTeam())) {
                         gc.drawImage(new Image("/images/enemy_arrow.png"), p.getPosition().getxCoord() - 6,
                                 p.getPosition().getyCoord() - 70, 11, 10);
                     }
@@ -229,7 +233,7 @@ public class GamefieldController implements Initializable {
                     model.getLocalPlayer().getPosition().getyCoord() - 70, 11, 10);
 
 
-        if (model.getCurrentPlayer() != null) {
+        if (model.getCurrentPlayer() != null && model.getCurrentPlayer().getPosition() != null) {
             //Targetmarker
             int x = model.getCurrentPlayer().getPosition().getxCoord();
             int y = model.getCurrentPlayer().getPosition().getyCoord();

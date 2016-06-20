@@ -2,6 +2,7 @@ package server;
 
 import com.sun.xml.internal.ws.api.message.Packet;
 import gameobjects.*;
+import gameobjects.Package;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -33,6 +34,7 @@ public class ServerModel {
     private GameWorld world;
 
     private GameState state;
+
 
     private ServerModel() {
         try {
@@ -83,14 +85,18 @@ public class ServerModel {
                             Object receivedP = in.readObject();
 
                             ObjectOutputStream out = new ObjectOutputStream(csocket.getOutputStream());
-                            if (receivedP instanceof String && ((String) receivedP).contains("UpdateRequest")) {
+                            if (receivedP instanceof UpdateInformation) {
                                 //TODO
                                 //Client will Daten
-                                //System.out.println(new Date() + " [Client Datenabfrage]");
-                                if (((String) receivedP).contains("WorldRequest"))
-                                    out.writeObject(world);
-                                out.writeObject(players);
-                                out.writeObject(currentPlayer);
+                                if(receivedP.equals(UpdateInformation.Player)){
+                                    out.writeObject(new Package(changedPlayers(),null,currentPlayer));
+                                }
+                                else if(receivedP.equals(UpdateInformation.World)){
+                                    out.writeObject(new Package(null,world,currentPlayer));
+                                }
+                                else if(receivedP.equals(UpdateInformation.World_a_Player)){
+                                    out.writeObject(new Package(changedPlayers(),world,currentPlayer));
+                                }
                             } else if (receivedP instanceof Player) {
                                 //Client schickt Daten
                                 Player pCL = (Player) receivedP;
@@ -171,5 +177,15 @@ public class ServerModel {
         ArrayList<Player> p = new ArrayList<>(getPlayers());
         p.remove(currentPlayer);
         return p;
+    }
+
+    public List<Player> changedPlayers() {
+        return getPlayers();/*
+        List<Player> pls = new ArrayList<>();
+        for (Player p : getPlayers()) {
+            if (p != null && p.hasChanged())
+                pls.add(p);
+        }
+        return pls;*/
     }
 }
