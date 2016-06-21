@@ -25,6 +25,7 @@ import java.awt.*;
 import java.awt.Rectangle;
 import java.net.URL;
 import java.util.*;
+import java.util.List;
 
 /**
  * Created by Andreas on 24.05.2016.
@@ -46,12 +47,16 @@ public class GamefieldController implements Initializable {
 
     private ClientModel model;
 
+    private List<Cloud> clouds;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         model = ClientModel.getInstance();
         gc = canvas.getGraphicsContext2D();
         hudgc = cv_hud.getGraphicsContext2D();
+
+        clouds = new ArrayList<>();
+        clouds.add(new Cloud());
 
         pane.setOnKeyPressed(event -> {
             if (model.getCurrentPlayer() != null && model.getLocalPlayer() != null) {
@@ -130,7 +135,6 @@ public class GamefieldController implements Initializable {
                                           );
                                           Thread background = new Thread(() -> {
                                               Platform.runLater(() -> {
-
                                                   drawBackground();
                                                   drawPlayers();
                                                   drawRockets();
@@ -141,7 +145,27 @@ public class GamefieldController implements Initializable {
                                           background.start();
                                       }
                                   }
-                , 100, 20);
+                , 100, 35);
+        Timer cloudTimer = new Timer(true);
+        cloudTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                for (Cloud c : clouds) {
+                    if (c.atTheEnd())
+                        clouds.remove(c);
+                    else
+                        c.fly();
+                }
+            }
+        }, 500, 168);
+        Timer cloudGenTimer = new Timer(true);
+        cloudGenTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                if (clouds.size() < 5)
+                    clouds.add(new Cloud());
+            }
+        }, 100, 10000);
     }
 
     private void drawRockets() {
@@ -196,10 +220,14 @@ public class GamefieldController implements Initializable {
 
     private void drawBackground() {
         if (model.getWorld() != null) {
+            GraphicsContext gcgf = canvas_gamefield.getGraphicsContext2D();
+            for (Cloud c : new ArrayList<>(clouds)) {
+                gcgf.drawImage(c.getCloud(), c.getPosition().getxCoord(), c.getPosition().getyCoord(), 48, 48);
+            }
+
             if (ClientModel.getInstance().getWorld().isWorldChanged()) {
                 //System.out.println("[Client] Welt gezeichnet!");
                 ClientModel.getInstance().getWorld().setWorldChanged();
-                GraphicsContext gcgf = canvas_gamefield.getGraphicsContext2D();
                 gcgf.clearRect(0, 0, canvas_gamefield.getWidth(), canvas_gamefield.getHeight());
                 for (Surface surface : ClientModel.getInstance().getWorld().getGameWorld()) {
                     gcgf.setFill(Color.GREEN);

@@ -2,12 +2,14 @@ package client;
 
 import gameobjects.*;
 import gameobjects.Package;
+import javafx.application.Platform;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.ConnectException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
@@ -76,8 +78,8 @@ public class ClientModel extends Observable {
                         }
                         //System.out.println("[Client] Daten empfangen.");
                     }
-                } catch (SocketTimeoutException e) {
-                    new Alert(Alert.AlertType.WARNING, "Keine Antwort vom Server!", ButtonType.OK).showAndWait();
+                } catch (ConnectException e) {
+                    System.out.println("[C] Verbindung verloren!");
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 } catch (ClassNotFoundException e) {
@@ -85,7 +87,7 @@ public class ClientModel extends Observable {
                 }
                 worldRequest--;
                 if(worldRequest<0)
-                    worldRequest = 16;
+                    worldRequest = 32;
             }
         }, 0, 20);
 

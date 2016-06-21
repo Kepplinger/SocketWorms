@@ -61,13 +61,15 @@ public class GameState implements Serializable {
             for (Player p : teamA.values()) {
                 p.heal(100);
             }
+            System.out.println("[S] Team B hat Punkte bekommen.");
         } else if (getDeadPlayer(teamB.values()).size() == teamB.size()) {
             info.setPoints_a(info.getPoints_a() + getDeadPlayer(teamA.values()).size() == 0 ? 3 : getDeadPlayer(teamA.values()).size() < teamA.size() ? 2 : 1);
             for (Player p : teamA.values()) {
                 p.heal(100);
             }
+            System.out.println("[S] Team A hat Punkte bekommen.");
         }
-
+        System.out.println("[S] Neue Runde.");
     }
 
     public Player nextPlayer() {
