@@ -49,7 +49,7 @@ public class GameWorld implements Serializable {
         int waveHeight; // Höhe der Änderung
 
         //Alle Punkte auf der linken Seite der Welt werden hinzugefügt
-        for (int i = height; i >= height - relativHeight; i--) {
+        for (int i = height; i >= height - relativHeight; i -= 2) {
             generatedWorld.add(new Point(0, i));
         }
 
@@ -84,12 +84,12 @@ public class GameWorld implements Serializable {
 
 
         //Alle Punkte auf der rechten Seite der Welt werden hinzugefügt
-        for (int i = height; i > height - relativHeight; i--) {
+        for (int i = relativHeight; i < height; i += 2) {
             generatedWorld.add(new Point(width, i));
         }
 
         //Alle Punkte auf der Unterseite der Welt werden hinzugefügt
-        for (int i = width; i >= 0; i--) {
+        for (int i = width; i >= 0; i -= 2) {
             generatedWorld.add(new Point(i, height));
         }
 
@@ -263,10 +263,12 @@ public class GameWorld implements Serializable {
 
         for (int i = 0; i < getGameWorld().size(); i++) {
             Surface surface = getGameWorld().get(i);
-            currentPoint = surface.getBorder().get(surface.getIndexofNearestPoint(p));
+            if (!surface.getBorder().isEmpty()) {
+                currentPoint = surface.getBorder().get(surface.getIndexofNearestPoint(p));
 
-            if (nearestPoint == null || getDistance(p, nearestPoint) > getDistance(p, currentPoint))
-                nearestPoint = currentPoint;
+                if (nearestPoint == null || getDistance(p, nearestPoint) > getDistance(p, currentPoint))
+                    nearestPoint = currentPoint;
+            }
         }
 
         if (nearestPoint == null)

@@ -53,12 +53,8 @@ public class TestController implements Initializable {
                 gc.setFill(Color.RED);
                 gc.fillPolygon(xCoord, grasYCoord, explosion.getBorder().length);
             }else{
-                double inital = System.nanoTime();
-
                 System.out.println(gameWorld.containsPoint(new Point((int)event.getX(),(int)event.getY())));
                 gameWorld.getNearestPoint(new Point((int)event.getX(),(int)event.getY()));
-
-                System.out.println(System.nanoTime() - inital);
             }
 
         });
