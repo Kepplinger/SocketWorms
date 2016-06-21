@@ -12,21 +12,19 @@ import java.util.List;
 public class Rocket {
     private Point start;
     private double initSpeed;
+    private int initialX;
+    private int initialY;
     private double angle;
-
-    private double lastX = Double.MIN_VALUE;
-    private double lastY = Double.MIN_VALUE;
     private double xSpeed;
     private double ySpeed;
-
 
     public Rocket(Point startPoint, double initialSpeed, double angle) {
         start = startPoint;
         initSpeed = initialSpeed;
         this.angle = angle;
 
-        lastX = start.getxCoord();
-        lastY = start.getyCoord();
+        initialX = start.getxCoord();
+        initialY = start.getyCoord();
 
         xSpeed = Math.cos(Math.toRadians(angle)) * initSpeed;
         ySpeed = Math.sin(Math.toRadians(angle)) * initSpeed;
@@ -91,13 +89,14 @@ public class Rocket {
     }
 
     private Explosion explode(Point destination) {
-        return new Explosion(new Point((int) destination.getxCoord(), (int) destination.getyCoord()));
+        return new Explosion(new Point(destination.getxCoord(), destination.getyCoord()));
     }
 
     public Explosion fly(GameWorld world) {
-        double GRAVITATIONAL_CONSTANT = 9.81;
-        int initialX = (int) lastX;
-        int initialY = (int) lastY;
+
+        double intitial;
+
+        double GRAVITATIONAL_CONSTANT = 4;
 
         double currentX;
         double currentY;
@@ -105,36 +104,50 @@ public class Rocket {
         int finalX;
         int finalY;
 
-
         if (initialY <= 576) {
             ySpeed = (ySpeed - GRAVITATIONAL_CONSTANT);
-            finalX = (int) Math.round((double) initialX + xSpeed);
+            finalX = (int) (initialX + Math.round(xSpeed));
             finalY = (int) (initialY - ySpeed);
 
-            currentX = finalX;
-            currentY = finalY;
+            currentX = initialX;
+            currentY = initialY;
 
-            if (world.containsPoint(new Point(finalX, finalY))) {
-                do {
-                    currentX = currentX + (finalX - initialX) / initSpeed * 5;
-                    currentY = currentY + (finalY - initialY) / initSpeed * 5;
+            intitial = System.nanoTime();
 
+            double moveX = (finalX - initialX) / xSpeed;
+            double moveY = (finalY - initialY) / ySpeed;
+
+            Point currentPoint = new Point(0, 0);
+
+            do {
+                currentX = currentX + moveX;
+                currentY = currentY + moveY;
+                currentPoint.setxCoord((int) currentX);
+                currentPoint.setyCoord((int) currentY);
+
+
+                if (getDistance(world.getNearestPoint(currentPoint), currentPoint) < 100) {
                     if (world.containsPoint(new Point((int) currentX, (int) currentY))) {
                         return explode(new Point((int) currentX, (int) currentY));
                     }
+                }
 
-                } while (Math.round(currentX) != finalX && Math.round(currentY) != finalY);
-            }
+            } while (Math.round(currentX) != finalX && Math.round(currentY) != finalY);
 
-            lastX = finalX;
-            lastY = finalY;
+            initialX = finalX;
+            initialY = finalY;
         } else {
-            return explode(new Point((int) initialX, (int) initialY));
+            return explode(new Point(initialX, initialY));
         }
+        System.out.println(System.nanoTime() - intitial);
         return null;
     }
 
     public Point getPosition() {
-        return new Point((int) lastX, (int) lastY);
+        return new Point(initialX, initialY);
+    }
+
+    private double getDistance(Point point1, Point point2) {
+        return Math.sqrt(Math.pow(Math.abs(point1.getxCoord() - point2.getxCoord()), 2) + Math.pow(Math.abs(point1.getyCoord() - point2.getyCoord()), 2));
     }
 }

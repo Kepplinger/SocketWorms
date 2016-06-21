@@ -15,7 +15,7 @@ public class GameWorld implements Serializable {
     public final static int EXPECTEDVARIATIONS = 10;    // Die erwartete Anzahl an Änderungen im Terrain
     public final static int MAXELEVATION = 1000;        // Die maximale Höhe einer Änderung im Terrain
     public final static int MINVARIATIONYWIDTH = 100;   // Die minimale Breite einer Änderung im Terrain
-    public final static int EXPLOSIONRADIUS = 50;       // Radius einer Explosion
+    public final static int EXPLOSIONRADIUS = 25;       // Radius einer Explosion
     public final static int EXPLOSIONPOINTS = 60;      // Anzahl der Punkte einer Explosion
 
     private List<Surface> gameWorld;    // Liste aller Oberflächen im Spiel
@@ -84,7 +84,7 @@ public class GameWorld implements Serializable {
 
 
         //Alle Punkte auf der rechten Seite der Welt werden hinzugefügt
-        for (int i = relativHeight; i < height; i += 2) {
+        for (int i = 576 - relativHeight; i < height; i += 2) {
             generatedWorld.add(new Point(width, i));
         }
 

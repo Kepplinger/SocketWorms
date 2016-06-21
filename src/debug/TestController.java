@@ -2,6 +2,7 @@ package debug;
 
 import gameobjects.Explosion;
 import gameobjects.Point;
+import gameobjects.Rocket;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.canvas.Canvas;
@@ -22,6 +23,7 @@ public class TestController implements Initializable {
     private GraphicsContext gc;
     private GameWorld gameWorld;
     private Timer timer;
+    private Rocket rocket;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -33,9 +35,16 @@ public class TestController implements Initializable {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
+                if (rocket != null) {
+                    Explosion explosion = rocket.fly(gameWorld);
+                    if (explosion != null) {
+                        rocket = null;
+                        gameWorld.destroySurface(explosion);
+                    }
+                }
                 drawSurface();
             }
-        }, new Date(), 100);
+        }, new Date(), 20);
 
         canvas.setOnMousePressed(event -> {
             if (event.getButton().equals(MouseButton.PRIMARY)) {
@@ -52,15 +61,18 @@ public class TestController implements Initializable {
 
                 gc.setFill(Color.RED);
                 gc.fillPolygon(xCoord, grasYCoord, explosion.getBorder().length);
-            }else{
-                System.out.println(gameWorld.containsPoint(new Point((int)event.getX(),(int)event.getY())));
-                gameWorld.getNearestPoint(new Point((int)event.getX(),(int)event.getY()));
+            } else if (event.getButton().equals(MouseButton.MIDDLE)) {
+                rocket = new Rocket(new Point((int) event.getX(), (int) event.getY()), 45, 45);
+            } else {
+                System.out.println(gameWorld.containsPoint(new Point((int) event.getX(), (int) event.getY())));
+                gameWorld.getNearestPoint(new Point((int) event.getX(), (int) event.getY()));
             }
 
         });
     }
 
     private void drawSurface() {
+
 
         gc.setFill(Color.WHITE);
         gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
@@ -82,5 +94,10 @@ public class TestController implements Initializable {
         gc.setStroke(Color.BLACK);
         gc.setLineWidth(2);
         //gc.strokeRect(0, 0, canvas.getWidth(), canvas.getHeight());
+
+        if (rocket != null) {
+            gc.setFill(Color.RED);
+            gc.fillOval(rocket.getPosition().getxCoord() - 3, rocket.getPosition().getyCoord() - 3, 6, 6);
+        }
     }
 }
