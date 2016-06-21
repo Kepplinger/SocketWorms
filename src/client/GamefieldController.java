@@ -242,7 +242,7 @@ public class GamefieldController implements Initializable {
             if (model.getLocalPlayer() != null && model.getLocalPlayer().getPosition() != null)
                 gc.drawImage(new Image("/images/local_arrow.png"), model.getLocalPlayer().getPosition().getxCoord() - 6,
                         model.getLocalPlayer().getPosition().getyCoord() - 70, 11, 10);
-            if (model.getCurrentPlayer().isDead()){
+            if (model.getCurrentPlayer() != null && model.getCurrentPlayer().isDead()){
                 gc.drawImage(new Image("/images/dead.png"),384,160,256, 256);
             }
 
