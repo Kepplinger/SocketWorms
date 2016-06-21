@@ -54,83 +54,94 @@ public class GamefieldController implements Initializable {
         hudgc = cv_hud.getGraphicsContext2D();
 
         pane.setOnKeyPressed(event -> {
-            if (model.getCurrentPlayer().equals(model.getLocalPlayer())) {
-                if (event.getCode() == KeyCode.SPACE) {
-                    model.getCurrentPlayer().getShoot().setCurrentSpeed(model.getCurrentPlayer().getShoot().getCurrentSpeed() >= 1 ? 0 : model.getCurrentPlayer().getShoot().getCurrentSpeed() + 0.01);
+            if (model.getCurrentPlayer() != null && model.getLocalPlayer() != null) {
+                if (model.getCurrentPlayer().equals(model.getLocalPlayer())) {
+                    if (event.getCode() == KeyCode.SPACE) {
+                        model.getCurrentPlayer().getShoot().setCurrentSpeed(model.getCurrentPlayer().getShoot().getCurrentSpeed() >= 1 ? 0 : model.getCurrentPlayer().getShoot().getCurrentSpeed() + 0.01);
+                    }
+                    if (event.getCode() == KeyCode.UP) {
+                        model.getLocalPlayer().getShoot().setAngle(model.getLocalPlayer().getShoot().getAngle() <= -180 ? 0 :
+                                model.getLocalPlayer().getShoot().getAngle() >= 180 ? -179 : model.getLocalPlayer().getShoot().getAngle() + 1);
+                    }
+                    if (event.getCode() == KeyCode.DOWN) {
+                        model.getLocalPlayer().getShoot().setAngle(model.getLocalPlayer().getShoot().getAngle() <= -179 ? 180 :
+                                model.getLocalPlayer().getShoot().getAngle() == 0 ? -1 : model.getLocalPlayer().getShoot().getAngle() - 1);
+                    }
+                    if (event.getCode() == KeyCode.LEFT) {
+                        model.getLocalPlayer().movePlayer(-2);
+                    }
+                    if (event.getCode() == KeyCode.RIGHT) {
+                        model.getLocalPlayer().movePlayer(2);
+                    }
+                    model.sendData();
                 }
-                if (event.getCode() == KeyCode.UP) {
-                    model.getLocalPlayer().getShoot().setAngle(model.getLocalPlayer().getShoot().getAngle() <= -180 ? 0 :
-                            model.getLocalPlayer().getShoot().getAngle() >= 180 ? -179 : model.getLocalPlayer().getShoot().getAngle() + 1);
-                }
-                if (event.getCode() == KeyCode.DOWN) {
-                    model.getLocalPlayer().getShoot().setAngle(model.getLocalPlayer().getShoot().getAngle() <= -179 ? 180 :
-                            model.getLocalPlayer().getShoot().getAngle() == 0 ? -1 : model.getLocalPlayer().getShoot().getAngle() - 1);
-                }
-                if (event.getCode() == KeyCode.LEFT) {
-                    model.getLocalPlayer().movePlayer(-2);
-                }
-                if (event.getCode() == KeyCode.RIGHT) {
-                    model.getLocalPlayer().movePlayer(2);
-                }
-                model.sendData();
             }
         });
         pane.setOnKeyReleased(event -> {
-            if (model.getCurrentPlayer().equals(model.getLocalPlayer())) {
-                if (event.getCode() == KeyCode.ENTER) {
-                    double speed = model.getCurrentPlayer().getShoot().getCurrentSpeed() * 90;
-                    model.getRockets().add(new Rocket(model.getLocalPlayer().getPosition(), speed, model.getCurrentPlayer().getShoot().getAngle()));
-                    model.getLocalPlayer().getShoot().setFired(true);
-                    model.sendData();
+            if (model.getCurrentPlayer() != null && model.getLocalPlayer() != null) {
+                if (model.getCurrentPlayer().equals(model.getLocalPlayer())) {
+                    if (event.getCode() == KeyCode.ENTER) {
+                        double speed = model.getCurrentPlayer().getShoot().getCurrentSpeed() * 90;
+                        model.getRockets().add(new Rocket(model.getLocalPlayer().getPosition(), speed, model.getCurrentPlayer().getShoot().getAngle()));
+                        model.getLocalPlayer().getShoot().setFired(true);
+                        model.sendData();
+                    }
                 }
             }
         });
 
         Timer timer = new Timer(true);
         timer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                Platform.runLater(() -> {
-                    hudgc.setFont(new Font("System", 14));
-                    hudgc.drawImage(new Image("/images/hud_background.png"), 0, 0, 1024, 50);
+                                      @Override
+                                      public void run() {
+                                          Platform.runLater(() -> {
+                                                      hudgc.setFont(new Font("System", 14));
+                                                      hudgc.drawImage(new Image("/images/hud_background.png"), 0, 0, 1024, 50);
 
-                    hudgc.setFill(Color.DARKGRAY);
-                    hudgc.fillRoundRect(10, 10, 104, 24, 5, 5);
-                    hudgc.setStroke(Color.BLACK);
-                    hudgc.strokeRoundRect(10, 10, 104, 24, 5, 5);
+                                                      hudgc.setFill(Color.DARKGRAY);
+                                                      hudgc.fillRoundRect(10, 10, 104, 24, 5, 5);
+                                                      hudgc.setStroke(Color.BLACK);
+                                                      hudgc.strokeRoundRect(10, 10, 104, 24, 5, 5);
 
 
-                    if (model.getCurrentPlayer() != null && model.getLocalPlayer() != null) {
-                        hudgc.setFill(Color.DARKRED);
-                        hudgc.fillRoundRect(12, 12, model.getLocalPlayer().getShoot().getCurrentSpeed() * 100, 20, 5, 5);
-                        hudgc.setStroke(Color.WHITE);
-                        hudgc.strokeText(String.format("%d%%", (int) (model.getLocalPlayer().getShoot().getCurrentSpeed() * 100)), 49, 26);
+                                                      if (model.getCurrentPlayer() != null && model.getLocalPlayer() != null) {
+                                                          hudgc.setFill(Color.DARKRED);
+                                                          hudgc.fillRoundRect(12, 12, model.getLocalPlayer().getShoot().getCurrentSpeed() * 100, 20, 5, 5);
+                                                          hudgc.setStroke(Color.WHITE);
+                                                          hudgc.strokeText(String.format("%d%%", (int) (model.getLocalPlayer().getShoot().getCurrentSpeed() * 100)), 49, 26);
 
-                        if (model.getLocalPlayer().getPosition() != null) {
-                            hudgc.setStroke(Color.WHITE);
-                            hudgc.strokeText(String.format("Player: X: %d Y: %d", model.getLocalPlayer().getPosition().getxCoord(),
-                                    model.getLocalPlayer().getPosition().getyCoord()), 400, 15);
-                        }
-                        hudgc.setStroke(Color.ORANGE);
-                        hudgc.strokeText(String.format("Winkel: %.2f", model.getLocalPlayer().getShoot().getAngle()), 200, 35);
-                        hudgc.setFill(Color.RED);
-                        hudgc.setFont(new Font("System", 24));
-                        hudgc.fillText(String.format("♥ %d", model.getLocalPlayer().getHealth()), 930, 35);
-                    }
-                });
-                Thread background = new Thread(() -> {
-                    Platform.runLater(() -> {
+                                                          if (model.getLocalPlayer().getPosition() != null) {
+                                                              hudgc.setStroke(Color.WHITE);
+                                                              hudgc.strokeText(String.format("Player: X: %d Y: %d", model.getLocalPlayer().getPosition().getxCoord(),
+                                                                      model.getLocalPlayer().getPosition().getyCoord()), 400, 15);
+                                                          }
+                                                          hudgc.setStroke(Color.ORANGE);
+                                                          hudgc.strokeText(String.format("Winkel: %.2f", model.getLocalPlayer().getShoot().getAngle()), 200, 35);
+                                                          if (model.getLocalPlayer() != null && !model.getLocalPlayer().isDead()) {
+                                                              hudgc.setFill(Color.RED);
+                                                              hudgc.setFont(new Font("System", 24));
+                                                              hudgc.fillText(String.format("♥ %d", model.getLocalPlayer().getHealth()), 930, 35);
+                                                          } else {
+                                                              hudgc.drawImage(new Image("/images/dead.png"), 960, 5, 40, 40);
+                                                          }
+                                                      }
+                                                  }
 
-                        drawBackground();
-                        drawPlayers();
-                        drawRockets();
-                        drawForground();
-                    });
-                });
-                background.setDaemon(true);
-                background.start();
-            }
-        }, 100, 20);
+                                          );
+                                          Thread background = new Thread(() -> {
+                                              Platform.runLater(() -> {
+
+                                                  drawBackground();
+                                                  drawPlayers();
+                                                  drawRockets();
+                                                  drawForground();
+                                              });
+                                          });
+                                          background.setDaemon(true);
+                                          background.start();
+                                      }
+                                  }
+                , 100, 20);
     }
 
     private void drawRockets() {
@@ -210,7 +221,7 @@ public class GamefieldController implements Initializable {
     private void drawForground() {
         if (model.getOtherPlayers().size() <= 0 || model.getOtherPlayers().size() % 2 == 0) {
             gc.drawImage(new Image("/images/wait.png"), 384, 160, 256, 256);
-            gc.setFont(new Font("System",18));
+            gc.setFont(new Font("System", 18));
             gc.fillText("Warte auf Spieler...", 515 - getStringWidth("Warte auf Spieler...", new Font("System", 18)) / 2, 420);
         } else {
             for (Player p : model.getOtherPlayers()) {
@@ -242,8 +253,8 @@ public class GamefieldController implements Initializable {
             if (model.getLocalPlayer() != null && model.getLocalPlayer().getPosition() != null)
                 gc.drawImage(new Image("/images/local_arrow.png"), model.getLocalPlayer().getPosition().getxCoord() - 6,
                         model.getLocalPlayer().getPosition().getyCoord() - 70, 11, 10);
-            if (model.getCurrentPlayer() != null && model.getCurrentPlayer().isDead()){
-                gc.drawImage(new Image("/images/dead.png"),384,160,256, 256);
+            if (model.getLocalPlayer() != null && model.getLocalPlayer().isDead()) {
+                gc.drawImage(new Image("/images/dead.png"), 384, 160, 256, 256);
             }
 
 

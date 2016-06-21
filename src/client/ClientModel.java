@@ -29,7 +29,7 @@ public class ClientModel extends Observable {
     private List<Rocket> rockets;
     private GameWorld world;
 
-    int worldRequest = 16;
+    int worldRequest = 32;
 
     private ClientModel() {
         otherPlayers = new LinkedList<>();

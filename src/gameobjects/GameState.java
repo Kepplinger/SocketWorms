@@ -55,6 +55,19 @@ public class GameState implements Serializable {
         round++;
         left_TeamA = new LinkedList<>(teamA.values());
         left_TeamB = new LinkedList<>(teamB.values());
+
+        if (getDeadPlayer(teamA.values()).size() == teamA.size()) {
+            info.setPoints_b(info.getPoints_b() + getDeadPlayer(teamB.values()).size() == 0 ? 3 : getDeadPlayer(teamB.values()).size() < teamB.size() ? 2 : 1);
+            for (Player p : teamA.values()) {
+                p.heal(100);
+            }
+        } else if (getDeadPlayer(teamB.values()).size() == teamB.size()) {
+            info.setPoints_a(info.getPoints_a() + getDeadPlayer(teamA.values()).size() == 0 ? 3 : getDeadPlayer(teamA.values()).size() < teamA.size() ? 2 : 1);
+            for (Player p : teamA.values()) {
+                p.heal(100);
+            }
+        }
+
     }
 
     public Player nextPlayer() {
@@ -65,13 +78,10 @@ public class GameState implements Serializable {
         left_TeamA.removeAll(getDeadPlayer(teamA.values()));
         left_TeamB.removeAll(getDeadPlayer(teamB.values()));
 
-        if ((left_TeamB.size() == 0 || left_TeamA.size() == 0)) {
-            if (left_TeamA.size() == 0) {
-                info.setPoints_b(info.getPoints_b() + 1);
-            } else {
-                info.setPoints_a(info.getPoints_a() + 1);
-            }
+        if ((left_TeamB.size() == 0 && left_TeamA.size() == 0)) {
             newRound();
+            left_TeamA.removeAll(getDeadPlayer(teamA.values()));
+            left_TeamB.removeAll(getDeadPlayer(teamB.values()));
         }
 
 

@@ -46,7 +46,7 @@ public class LoginController implements Initializable{
         Parent root = null;
         try {
             root = FXMLLoader.load(getClass().getResource("view/Gamefield.fxml"));
-            stage.setTitle("WORMS - "+tf_serverip.getText());
+            stage.setTitle("WORMS - "+tf_serverip.getText() + " ["+tf_playername.getText()+"]");
             stage.setScene(new Scene(root));
             stage.centerOnScreen();
             stage.initModality(Modality.WINDOW_MODAL);
