@@ -181,12 +181,12 @@ public class GamefieldController implements Initializable {
 
                     if (!p.isDead()) {
                         if (p.getShoot().getAngle() < 90 && p.getShoot().getAngle() > -90) {
-                            gcPl.drawImage(new Image(String.format("/images/worms/Rworm%d.png", p.getWormSkin())), x - 6, y - 18, 12, 18);
+                            gcPl.drawImage(new Image(String.format("/images/worms/Rworm%d.png", p.getWormSkin())), x - 8, y - 24, 16, 24);
                         } else {
-                            gcPl.drawImage(new Image(String.format("/images/worms/worm%d.png", p.getWormSkin())), x - 6, y - 18, 12, 18);
+                            gcPl.drawImage(new Image(String.format("/images/worms/worm%d.png", p.getWormSkin())), x - 8, y - 24, 16, 24);
                         }
                     } else {
-                        gcPl.drawImage(new Image("/images/grave.png"), x - 6, y - 18, 12, 18);
+                        gcPl.drawImage(new Image("/images/grave.png"), x - 8, y - 24, 16, 24);
                     }
                 }
             }

@@ -17,6 +17,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import server.ServerStatController;
 import server.ServerViewController;
 
 import java.io.IOException;
@@ -101,10 +102,10 @@ public class LoginController implements Initializable{
         Stage stage = new Stage();
         Parent root = null;
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/server/views/ServerView.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/server/views/ServerStat.fxml"));
             root = loader.load();
-            ServerViewController controller = loader.getController();
-            stage.setTitle("Server - "+controller.getModel().getServerIP());
+            ServerStatController controller = loader.getController();
+            stage.setTitle("Server - ["+controller.getModel().getServerIP()+"]");
             stage.setScene(new Scene(root));
             stage.centerOnScreen();
             stage.setResizable(true);

@@ -140,6 +140,8 @@ public class ServerViewController implements Initializable {
 
 
             //STATS
+
+            //Dead Players
             Font fhd = new Font("System",14);
             Font fd = new Font("System",16);
             gc.drawImage(new Image("/images/dead.png"),2,(10+getStringHeight("A",fhd)+getStringHeight("789",fhd))/2-16,32,32);
@@ -186,6 +188,8 @@ public class ServerViewController implements Initializable {
             gc.setFont(fd);
             gc.fillText(String.format("%d",model.getState().getInfo().getPoints_b()),196+wdth,10+getStringHeight("A",fhd)+getStringHeight("789",fhd));
 
+
+            //Actual Player
         }
     }
 
@@ -205,12 +209,12 @@ public class ServerViewController implements Initializable {
 
                     if (!p.isDead()) {
                         if (p.getShoot().getAngle() < 90 && p.getShoot().getAngle() > -90) {
-                            gc.drawImage(new Image(String.format("/images/worms/Rworm%d.png", p.getWormSkin())), x - 6, y - 18, 12, 18);
+                            gc.drawImage(new Image(String.format("/images/worms/Rworm%d.png", p.getWormSkin())), x - 8, y - 24, 16, 24);
                         } else {
-                            gc.drawImage(new Image(String.format("/images/worms/worm%d.png", p.getWormSkin())), x - 6, y - 18, 12, 18);
+                            gc.drawImage(new Image(String.format("/images/worms/worm%d.png", p.getWormSkin())), x - 8, y - 24, 16, 24);
                         }
                     } else {
-                        gc.drawImage(new Image("/images/grave.png"), x - 6, y - 18, 12, 18);
+                        gc.drawImage(new Image("/images/grave.png"), x - 8, y - 24, 16, 24);
                     }
                 }
             }

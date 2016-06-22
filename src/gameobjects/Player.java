@@ -9,7 +9,7 @@ import java.util.Random;
  * um die Würmer richtig zu Bewegen und von der Schwerkraft zu beeinflussen.
  */
 public class Player implements Serializable {
-    public static final int WORM_SKINS = 15;
+    public static final int WORM_SKINS = 23;
 
     private String name;
     private Point position;

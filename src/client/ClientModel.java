@@ -66,7 +66,7 @@ public class ClientModel extends Observable {
                                 world = p.getWorld();
                             if (p.getCurrentPlayer() != null)
                                 currentPlayer = p.getCurrentPlayer();
-                            otherPlayers = p.updatePlayerList(otherPlayers);
+                            otherPlayers = p.getPlayers();
 
                             if (otherPlayers != null && otherPlayers.size() > 0 && otherPlayers.contains(localPlayer)) {
                                 localPlayer = otherPlayers.get(otherPlayers.indexOf(localPlayer));
