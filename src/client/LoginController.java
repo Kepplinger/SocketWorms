@@ -71,6 +71,9 @@ public class LoginController implements Initializable{
         else if (event.isControlDown() && event.getCode() == KeyCode.S) {
             startServer(null);
         }
+        else if (event.isControlDown() && event.getCode() == KeyCode.P) {
+            iv_skin.setImage(new Image("/images/worms/RPremium.png"));
+        }
     }
 
     public void connect(ActionEvent actionEvent) {
