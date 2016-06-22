@@ -2,6 +2,7 @@ package client;
 
 import gameobjects.Player;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
@@ -11,6 +12,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -35,6 +38,39 @@ public class LoginController implements Initializable{
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+
+
+        //When you press S you start the Server, left change skin, right change skin
+        mainPane.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent event) {
+                event.consume();
+                changeSkin(event);
+            }
+        });
+        //When you click enter on the ip Textfield you start the server
+        tf_serverip.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                startServer(null);
+            }
+        });
+
+
+    }
+
+    public void changeSkin(KeyEvent event) {
+        if (event.getCode() == KeyCode.RIGHT) {
+            nextSkin(null);
+            bt_left.setDefaultButton(true);
+        }
+        else if (event.getCode() == KeyCode.LEFT) {
+            previousSkin(null);
+            bt_right.setDefaultButton(true);
+        }
+        else if (event.isControlDown() && event.getCode() == KeyCode.S) {
+            startServer(null);
+        }
     }
 
     public void connect(ActionEvent actionEvent) {
@@ -49,7 +85,7 @@ public class LoginController implements Initializable{
             stage.setTitle("WORMS - "+tf_serverip.getText() + " ["+tf_playername.getText()+"]");
             stage.setScene(new Scene(root));
             stage.centerOnScreen();
-            stage.initModality(Modality.WINDOW_MODAL);
+            //stage.initModality(Modality.WINDOW_MODAL);
             stage.initOwner(((Node) actionEvent.getSource()).getScene().getWindow());
             stage.setResizable(true);
             stage.show();
