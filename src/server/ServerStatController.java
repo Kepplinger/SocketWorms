@@ -3,10 +3,7 @@ package server;
 import gameobjects.Player;
 import javafx.application.Platform;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
@@ -38,6 +35,8 @@ public class ServerStatController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         model = ServerModel.getInstance();
+        final boolean[] end = new boolean[1];
+        
         Timer t = new Timer(true);
         t.scheduleAtFixedRate(new TimerTask() {
             @Override
@@ -50,6 +49,16 @@ public class ServerStatController implements Initializable {
 
                         lb_dA.setText(String.format("%d", model.getState().getInfo().getCurDeaths_A()));
                         lb_dB.setText(String.format("%d", model.getState().getInfo().getCurDeaths_B()));
+                        if (end[0] != true && model.getState().getInfo().getCurDeaths_A() >= model.getState().getInfo().getPlayer_A_cnt()) {
+                            Alert a = new Alert(Alert.AlertType.INFORMATION, "TEAM B HAS WON", ButtonType.OK);
+                            end[0] = true;
+                            a.show();
+                        }
+                        else if (end[0] != true && model.getState().getInfo().getCurDeaths_B() >= model.getState().getInfo().getPlayer_B_cnt()) {
+                            Alert a = new Alert(Alert.AlertType.INFORMATION, "TEAM A HAS WON", ButtonType.OK);
+                            end[0] = true;
+                            a.show();
+                        }
 
                         if (model.getCurrentPlayer() != null) {
                             lb_curPlayer.setText(model.getCurrentPlayer().getName());
