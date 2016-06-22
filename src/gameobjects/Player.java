@@ -1,14 +1,11 @@
 package gameobjects;
 
-import javafx.application.Application;
-import org.omg.CORBA.portable.ApplicationException;
 
 import java.io.Serializable;
-import java.util.IllegalFormatException;
 import java.util.Random;
 
 public class Player implements Serializable {
-    public static final int WORM_SKINS = 10;
+    public static final int WORM_SKINS = 15;
 
     private String name;
     private Point position;
