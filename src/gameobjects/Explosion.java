@@ -5,6 +5,9 @@ import java.util.List;
 
 /**
  * Created by Simon on 26.05.2016.
+ *
+ * Diese Klasse ist für die Berechnung der Explosion zuständig und enthählt Methoden, damit man den Karter und den
+ * Schaden der Explosion ausrechnen kann.
  */
 public class Explosion {
 
@@ -21,6 +24,10 @@ public class Explosion {
         return border;
     }
 
+    /**
+     * Berechnet den Rand der Explosion.
+     * @param point
+     */
     public void determineBorder(Point point) {
         double angle = 0;
 
@@ -30,6 +37,11 @@ public class Explosion {
         }
     }
 
+    /**
+     * Gibt zurück ob sich der übergebene Punkt in der Explosion befindet.
+     * @param point
+     * @return
+     */
     public boolean contains(Point point) {
 
         if (getDistance(center, point) < GameWorld.EXPLOSIONRADIUS) {
@@ -40,6 +52,11 @@ public class Explosion {
 
     }
 
+    /**
+     * Gitb den Index des Punktes zurück, der am nächsten ist.
+     * @param point
+     * @return
+     */
     public int getIndexofNearestPoint(Point point) {
         double smallestDistance = Double.MAX_VALUE;
         int index = 0;
@@ -54,6 +71,10 @@ public class Explosion {
         return index;
     }
 
+    /**
+     * Berechnet den Schaden der umliegenden Würmer
+     * @param players
+     */
     public void calculateDamage(List<Player> players) {
         for (Player p : players) {
             if (contains(p.getPosition())) {
