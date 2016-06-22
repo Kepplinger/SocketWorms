@@ -70,7 +70,20 @@ public class LoginController implements Initializable{
             bt_right.setDefaultButton(true);
         }
         else if (event.isControlDown() && event.getCode() == KeyCode.S) {
-            startServer(null);
+            Stage stage = new Stage();
+            Parent root = null;
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/server/views/ServerStat.fxml"));
+                root = loader.load();
+                ServerStatController controller = loader.getController();
+                stage.setTitle("Server - ["+controller.getModel().getServerIP()+"]");
+                stage.setScene(new Scene(root));
+                stage.centerOnScreen();
+                stage.setResizable(true);
+                stage.show();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         else if (event.isControlDown() && event.getCode() == KeyCode.P) {
             iv_skin.setImage(new Image("/images/worms/RPremium.png"));
@@ -102,9 +115,9 @@ public class LoginController implements Initializable{
         Stage stage = new Stage();
         Parent root = null;
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/server/views/ServerStat.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/server/views/ServerView.fxml"));
             root = loader.load();
-            ServerStatController controller = loader.getController();
+            ServerViewController controller = loader.getController();
             stage.setTitle("Server - ["+controller.getModel().getServerIP()+"]");
             stage.setScene(new Scene(root));
             stage.centerOnScreen();
