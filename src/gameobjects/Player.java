@@ -8,7 +8,7 @@ import java.util.IllegalFormatException;
 import java.util.Random;
 
 public class Player implements Serializable {
-    public static final int WORM_SKINS = 5;
+    public static final int WORM_SKINS = 10;
 
     private String name;
     private Point position;

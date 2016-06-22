@@ -47,16 +47,12 @@ public class GamefieldController implements Initializable {
 
     private ClientModel model;
 
-    private List<Cloud> clouds;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         model = ClientModel.getInstance();
         gc = canvas.getGraphicsContext2D();
         hudgc = cv_hud.getGraphicsContext2D();
-
-        clouds = new ArrayList<>();
-        clouds.add(new Cloud());
 
         pane.setOnKeyPressed(event -> {
             if (model.getCurrentPlayer() != null && model.getLocalPlayer() != null) {
@@ -146,26 +142,6 @@ public class GamefieldController implements Initializable {
                                       }
                                   }
                 , 100, 35);
-        Timer cloudTimer = new Timer(true);
-        cloudTimer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                for (Cloud c : clouds) {
-                    if (c.atTheEnd())
-                        clouds.remove(c);
-                    else
-                        c.fly();
-                }
-            }
-        }, 500, 168);
-        Timer cloudGenTimer = new Timer(true);
-        cloudGenTimer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                if (clouds.size() < 5)
-                    clouds.add(new Cloud());
-            }
-        }, 100, 10000);
     }
 
     private void drawRockets() {
@@ -221,10 +197,6 @@ public class GamefieldController implements Initializable {
     private void drawBackground() {
         if (model.getWorld() != null) {
             GraphicsContext gcgf = canvas_gamefield.getGraphicsContext2D();
-            for (Cloud c : new ArrayList<>(clouds)) {
-                gcgf.drawImage(c.getCloud(), c.getPosition().getxCoord(), c.getPosition().getyCoord(), 48, 48);
-            }
-
             if (ClientModel.getInstance().getWorld().isWorldChanged()) {
                 //System.out.println("[Client] Welt gezeichnet!");
                 ClientModel.getInstance().getWorld().setWorldChanged();
@@ -304,6 +276,9 @@ public class GamefieldController implements Initializable {
                     angle360 = (180 - (curAngle * -1)) + 180;
                     a = Math.sin(Math.toRadians(angle360)) * 50;
                     b = Math.cos(Math.toRadians(angle360)) * 50;
+                }
+                else{
+                    b = 50;
                 }
                 gc.setFill(Color.BLACK);
                 gc.fillOval(x + b - 4, y - a - 4, 8, 8);
