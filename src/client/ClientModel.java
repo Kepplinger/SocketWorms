@@ -42,25 +42,23 @@ public class ClientModel extends Observable {
             csocket = new Socket();
             csocket.connect(new InetSocketAddress(getServerIP(), 7918), 10000);
 
+            ObjectOutputStream outputStream = new ObjectOutputStream(csocket.getOutputStream());
+            ObjectInputStream inputStream = new ObjectInputStream(csocket.getInputStream());
+
             Timer t = new Timer(true);
             t.scheduleAtFixedRate(new TimerTask() {
-
-                ObjectOutputStream outputStream;
-                ObjectInputStream inputStream;
 
                 @Override
                 public void run() {
 
+                    double initial = System.nanoTime();
                     try {
 
-                        if (csocket == null || csocket.isClosed()){
+                        if (csocket == null || csocket.isClosed()) {
                             csocket.connect(new InetSocketAddress(getServerIP(), 7918), 10000);
                         }
 
-                        outputStream = new ObjectOutputStream(csocket.getOutputStream());
                         outputStream.writeObject(new Request(RequestType.RETURN_PACKAGE));
-
-                        inputStream = new ObjectInputStream(csocket.getInputStream());
                         Package serverPackage = (Package) inputStream.readObject();
 
                         currentPlayer = serverPackage.getCurrentPlayer();
@@ -77,11 +75,15 @@ public class ClientModel extends Observable {
                     } catch (ClassNotFoundException e) {
                         e.printStackTrace();
                     }
+
+                    System.out.println(System.nanoTime() - initial);
                 }
+
             }, 0, 30);
 
+
         } catch (Exception ex) {
-            new Alert(Alert.AlertType.ERROR,"Master Caution!!!!").showAndWait();
+            new Alert(Alert.AlertType.ERROR, "Master Caution!!!!").showAndWait();
         }
     }
 

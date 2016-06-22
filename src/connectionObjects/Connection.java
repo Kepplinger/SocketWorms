@@ -24,32 +24,31 @@ public class Connection implements Runnable {
     @Override
     public void run() {
 
-        ObjectInputStream inputStream;
-        ObjectOutputStream outputStream;
+        ObjectInputStream inputStream = null;
+        ObjectOutputStream outputStream = null;
 
-        while (true) {
-            if (socket != null) {
+        try {
 
-                try {
-                    inputStream = new ObjectInputStream(socket.getInputStream());
-                    Request request = (Request) inputStream.readObject();
+            inputStream = new ObjectInputStream(socket.getInputStream());
+            outputStream = new ObjectOutputStream(socket.getOutputStream());
 
-                    if (request.getRequestType().equals(RequestType.RETURN_PACKAGE)){
-                        outputStream = new ObjectOutputStream(socket.getOutputStream());
-                        outputStream.writeObject(model.getPackage());
-                    }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
+
+        while (socket != null) {
+            try {
+                Request request = (Request) inputStream.readObject();
+
+                if (request.getRequestType().equals(RequestType.RETURN_PACKAGE)) {
+                    outputStream.writeObject(model.getPackage());
                 }
 
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
             }
         }
     }
