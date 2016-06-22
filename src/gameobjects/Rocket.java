@@ -8,6 +8,9 @@ import java.util.List;
 
 /**
  * Created by Andreas on 28.05.2016.
+ *
+ * Die Rocket Klasse speichert die Abschussparameter ab, und kann mithilfe der fly() Methode die Flugbahn mit der
+ * übergebenen Gschwindigkeit berechnen.
  */
 public class Rocket {
     private Point start;
@@ -29,53 +32,6 @@ public class Rocket {
 
         start.setyCoord(startPoint.getyCoord() - 20);
     }
-/*
-    public Point calculateFlightPath(GraphicsContext gc, GameWorld world) {
-        double GRAVITATIONAL_CONSTANT = 9.81;
-        int initialX = start.getxCoord();
-        int initialY = start.getyCoord();
-
-        double currentX;
-        double currentY;
-
-        int finalX;
-        int finalY;
-
-        double xSpeed = Math.cos(Math.toRadians(angle)) * initSpeed;
-        double ySpeed = Math.sin(Math.toRadians(angle)) * initSpeed;
-        List<Point> points = new LinkedList<>();
-
-        while (initialY <= 576) {
-
-            points.add(new Point(initialX, initialY));
-
-            ySpeed = (ySpeed - GRAVITATIONAL_CONSTANT);
-            finalX = (int) Math.round((double) initialX + xSpeed);
-            finalY = (int) (initialY - ySpeed);
-
-            if (world.containsPoint(new Point(finalX, finalY))) {
-
-                currentX = initialX;
-                currentY = initialY;
-
-                do {
-                    currentX = currentX + (finalX - initialX) / initSpeed * 5;
-                    currentY = currentY + (finalY - initialY) / initSpeed * 5;
-
-                    if (world.containsPoint(new Point((int) currentX, (int) currentY))) {
-                        points.add(new Point((int) currentX, (int) currentY));
-                        return drawFlightPath(points, gc);
-                    }
-
-                } while (Math.round(currentX) != finalX && Math.round(currentY) != finalY);
-            }
-
-            initialX = finalX;
-            initialY = finalY;
-        }
-
-        return new Point(-1,-1);
-    }*/
 
     private Explosion explode(Point destination) {
         return new Explosion(new Point(destination.getxCoord(), destination.getyCoord()));

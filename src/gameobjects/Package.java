@@ -1,23 +1,26 @@
 package gameobjects;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by Andreas on 20.06.2016.
+ *
+ * Die Package Klasse behinhaltet alle Daten, die vom Server an die Clients gschickt werden.
+ *
  */
 public class Package implements Serializable {
-    private GameInfo info;
-    private List<Player> changedPlayers;
-    private GameWorld world;
-    private Player current;
 
-    public Package(GameInfo info, List<Player> changedPlayers, GameWorld world, Player current) {
+    private GameInfo info;
+    private List<Player> players;
+    private Player currentPlayer;
+    private GameWorld world;
+
+    public Package(GameInfo info, List<Player> players, GameWorld world, Player currentPlayer) {
         this.info = info;
-        this.changedPlayers = changedPlayers;
+        this.players = players;
+        this.currentPlayer = currentPlayer;
         this.world = world;
-        this.current = current;
     }
 
     public GameWorld getWorld() {
@@ -25,23 +28,14 @@ public class Package implements Serializable {
     }
 
     public Player getCurrentPlayer() {
-        return current;
+        return currentPlayer;
     }
 
     public GameInfo getInfo() {
         return info;
     }
 
-    public List<Player> updatePlayerList(List<Player> listToUpdate){
-        List<Player> newList = new ArrayList<>(changedPlayers);
-        for(Player p:changedPlayers){
-            if(!listToUpdate.contains(p)){
-                newList.add(p);
-            }
-            else{
-                newList.set(newList.indexOf(p),p);
-            }
-        }
-        return newList;
+    public List<Player> getPlayers() {
+        return players;
     }
 }

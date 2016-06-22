@@ -4,6 +4,10 @@ package gameobjects;
 import java.io.Serializable;
 import java.util.Random;
 
+/**
+ * Die Player Klasse entählt Informationen über die Position, Team, Leben, etc. der Würmer. Sie besitzt auch Methoden
+ * um die Würmer richtig zu Bewegen und von der Schwerkraft zu beeinflussen.
+ */
 public class Player implements Serializable {
     public static final int WORM_SKINS = 15;
 

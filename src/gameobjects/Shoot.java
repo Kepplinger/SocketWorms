@@ -4,6 +4,8 @@ import java.io.Serializable;
 
 /**
  * Created by Andreas on 18.06.2016.
+ *
+ * Diese Klasse wird an den Server gschickt, um ihm den derzeitgen Winkel, etc. mitzuteilen (oda irgendwie so)
  */
 public class Shoot implements Serializable{
     private double angle = 10;

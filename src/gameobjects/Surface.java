@@ -6,10 +6,15 @@ import java.util.List;
 
 /**
  * Created by Simon on 26.05.2016.
+ *
+ * Ein Surface Objekt stellt jeweils ein Polygon in der Welt dar. Die Welt kann aus mehreren Surfaces bestehen
+ * (z.B.: schwebende Teile).
  */
 public class Surface implements Serializable {
 
     private List<Point> border;
+
+    // Die Arrays werden benötig, um die Oberfläche im Canvas zu zeichnen.
     private double[] xCoords;
     private double[] yCoords;
 
@@ -23,10 +28,15 @@ public class Surface implements Serializable {
         refreshValues();
     }
 
+
     public List<Point> getBorder() {
         return border;
     }
 
+    /**
+     * Synchronisiert alle Punkte von der Liste mit den Arrays
+     * @return
+     */
     private void refreshValues() {
         xCoords = new double[border.size()];
         yCoords = new double[border.size()];
@@ -45,6 +55,11 @@ public class Surface implements Serializable {
         return xCoords;
     }
 
+    /**
+     * Liefert zurück, ob sich der Übergebene Punkt im Polygon befindet.
+     * @param point
+     * @return
+     */
     public boolean contains(Point point) {
 
         int i;
@@ -66,6 +81,11 @@ public class Surface implements Serializable {
         return result;
     }
 
+    /**
+     * Liefert den Index, des am nächsten gelgenen Punktes zurück.
+     * @param point
+     * @return
+     */
     public int getIndexofNearestPoint(Point point) {
 
         double smallestDistance = Double.MAX_VALUE;

@@ -9,6 +9,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Created by Kepplinger on 24.05.2016.
+ *
+ * Die GameWorld Klasse besitzt eine Liste von Surfaces (also die ganze Spielwelt) und ist zuständig für das Generieren
+ * der Spielwelt und das Zerstören der Welt.
  */
 public class GameWorld implements Serializable {
 
