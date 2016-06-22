@@ -1,16 +1,13 @@
 package server;
 
-import gameobjects.Explosion;
-import gameobjects.Player;
-import gameobjects.Rocket;
-import gameobjects.Surface;
+import gameobjects.*;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
-import javafx.scene.input.KeyCode;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -28,11 +25,11 @@ public class ServerViewController implements Initializable {
     @FXML
     public Canvas canvas_gamefield;
     @FXML
-    private Canvas canvas;
-    @FXML
     public Canvas cv_hud;
     @FXML
     public AnchorPane pane;
+    @FXML
+    private Canvas canvas;
 
     private GraphicsContext gc;
     private GraphicsContext hudgc;
@@ -72,39 +69,43 @@ public class ServerViewController implements Initializable {
                         }
                     }
                 });
-                Thread background = new Thread(() -> {
-                    Platform.runLater(() -> {
-                        drawBackground();
-                        drawPlayers();
-                        drawRockets();
-                        drawForground();
-                    });
+
+                Platform.runLater(() -> {
+                    drawBackground();
+                    drawPlayers();
+                    drawRocket();
+                    drawForground();
                 });
-                background.setDaemon(true);
-                background.start();
+
             }
-        }, 100, 50);
+        }, 100, 250);
+
+        canvas.setOnMousePressed(event -> {
+            if (event.getButton().equals(MouseButton.PRIMARY)) {
+                model.getWorld().destroySurface(new Explosion(new Point((int) event.getX(), (int) event.getY())));
+            }
+        });
     }
 
     private void drawForground() {
-        for (Player p : model.getOtherPlayers()) {
-            if (p.getPosition() != null) {
-                if (!p.isDead()) {
-                    if (p.getTeam() != null && model.getCurrentPlayer() != null && model.getCurrentPlayer().getTeam() != null && !p.getTeam().equals(model.getCurrentPlayer().getTeam())) {
-                        gc.drawImage(new Image("/images/enemy_arrow.png"), p.getPosition().getxCoord() - 6,
-                                p.getPosition().getyCoord() - 70, 11, 10);
+        for (Player player : model.getOtherPlayers()) {
+            if (player.getPosition() != null) {
+                if (!player.isDead()) {
+                    if (player.getTeam() != null && model.getCurrentPlayer() != null && model.getCurrentPlayer().getTeam() != null && !player.getTeam().equals(model.getCurrentPlayer().getTeam())) {
+                        gc.drawImage(new Image("/images/enemy_arrow.png"), player.getPosition().getxCoord() - 6,
+                                player.getPosition().getyCoord() - 70, 11, 10);
                     }
                     gc.setFill(Color.BLACK);
                     gc.setFont(new Font("System", 14));
-                    gc.fillText(p.getName(), p.getPosition().getxCoord() - (getStringWidth(p.getName(), new Font("System", 14)) / 2), p.getPosition().getyCoord() - 45);
+                    gc.fillText(player.getName(), player.getPosition().getxCoord() - (getStringWidth(player.getName(), new Font("System", 14)) / 2), player.getPosition().getyCoord() - 45);
                     gc.setFill(Color.RED);
                     gc.setFont(new Font("System", 10));
-                    gc.fillText(String.format("%d%%", p.getHealth()), p.getPosition().getxCoord() -
-                            (getStringWidth(String.format("%d%%", p.getHealth()), new Font("System", 10)) / 2), p.getPosition().getyCoord() - 30);
+                    gc.fillText(String.format("%d%%", player.getHealth()), player.getPosition().getxCoord() -
+                            (getStringWidth(String.format("%d%%", player.getHealth()), new Font("System", 10)) / 2), player.getPosition().getyCoord() - 30);
                 } else {
                     gc.setFill(Color.RED);
                     gc.setFont(new Font("System", 10));
-                    gc.fillText(p.getName(), p.getPosition().getxCoord() - (getStringWidth(p.getName(), new Font("System", 10)) / 2), p.getPosition().getyCoord() - 25);
+                    gc.fillText(player.getName(), player.getPosition().getxCoord() - (getStringWidth(player.getName(), new Font("System", 10)) / 2), player.getPosition().getyCoord() - 25);
                 }
             }
         }
@@ -114,13 +115,12 @@ public class ServerViewController implements Initializable {
             int x = model.getCurrentPlayer().getPosition().getxCoord();
             int y = model.getCurrentPlayer().getPosition().getyCoord();
 
-            double angle360 = 0;
+            double angle360;
             double a = 0;
             double b = 0;
-            double angle = model.getCurrentShoot().getAngle();
+            double angle = model.getRocketAngle();
 
             if (angle > 0) {
-                angle360 = angle;
                 a = Math.sin(Math.toRadians(angle)) * 50;
                 b = Math.cos(Math.toRadians(angle)) * 50;
             } else if (angle < 0) {
@@ -140,59 +140,60 @@ public class ServerViewController implements Initializable {
 
 
             //STATS
-            Font fhd = new Font("System",14);
-            Font fd = new Font("System",16);
-            gc.drawImage(new Image("/images/dead.png"),2,(10+getStringHeight("A",fhd)+getStringHeight("789",fhd))/2-16,32,32);
+            Font fhd = new Font("System", 14);
+            Font fd = new Font("System", 16);
+            gc.drawImage(new Image("/images/dead.png"), 2, (10 + getStringHeight("A", fhd) + getStringHeight("789", fhd)) / 2 - 16, 32, 32);
 
-            double wdth = getStringWidth(String.valueOf(model.getState().getInfo().getCurDeaths_A()),fhd);
-            double wdth2 = getStringWidth(String.valueOf(model.getState().getInfo().getCurDeaths_B()),fhd);
+            double wdth = getStringWidth(String.valueOf(model.getState().getInfo().getCurDeaths_A()), fhd);
+            double wdth2 = getStringWidth(String.valueOf(model.getState().getInfo().getCurDeaths_B()), fhd);
 
             gc.setFont(fhd);
             gc.setFill(Color.RED);
-            gc.fillText("A",36+wdth/2-getStringWidth("A",fhd)/2,5+getStringHeight("A",fhd));
+            gc.fillText("A", 36 + wdth / 2 - getStringWidth("A", fhd) / 2, 5 + getStringHeight("A", fhd));
 
             gc.setFill(Color.BLACK);
             gc.setFont(fd);
-            gc.fillText(String.format("%d",model.getState().getInfo().getCurDeaths_A()),36,10+getStringHeight("A",fhd)+getStringHeight("789",fhd));
+            gc.fillText(String.format("%d", model.getState().getInfo().getCurDeaths_A()), 36, 10 + getStringHeight("A", fhd) + getStringHeight("789", fhd));
 
             gc.setFill(Color.RED);
             gc.setFont(fhd);
-            gc.fillText("B",46+wdth+wdth2/2-getStringWidth("B",fhd)/2,5+getStringHeight("B",fhd));
+            gc.fillText("B", 46 + wdth + wdth2 / 2 - getStringWidth("B", fhd) / 2, 5 + getStringHeight("B", fhd));
 
             gc.setFill(Color.BLACK);
             gc.setFont(fd);
-            gc.fillText(String.format("%d",model.getState().getInfo().getCurDeaths_B()),46+wdth,10+getStringHeight("A",fhd)+getStringHeight("789",fhd));
+            gc.fillText(String.format("%d", model.getState().getInfo().getCurDeaths_B()), 46 + wdth, 10 + getStringHeight("A", fhd) + getStringHeight("789", fhd));
 
 
             //Points
-            gc.drawImage(new Image("/images/badge.png"),150,(10+getStringHeight("A",fhd)+getStringHeight("789",fhd))/2-16,32,32);
+            gc.drawImage(new Image("/images/badge.png"), 150, (10 + getStringHeight("A", fhd) + getStringHeight("789", fhd)) / 2 - 16, 32, 32);
 
-            wdth = getStringWidth(String.valueOf(model.getState().getInfo().getPoints_a()),fhd);
-            wdth2 = getStringWidth(String.valueOf(model.getState().getInfo().getPoints_b()),fhd);
+            wdth = getStringWidth(String.valueOf(model.getState().getInfo().getPoints_a()), fhd);
+            wdth2 = getStringWidth(String.valueOf(model.getState().getInfo().getPoints_b()), fhd);
 
             gc.setFont(fhd);
             gc.setFill(Color.RED);
-            gc.fillText("A",186+wdth/2-getStringWidth("A",fhd)/2,5+getStringHeight("A",fhd));
+            gc.fillText("A", 186 + wdth / 2 - getStringWidth("A", fhd) / 2, 5 + getStringHeight("A", fhd));
 
             gc.setFill(Color.BLACK);
             gc.setFont(fd);
-            gc.fillText(String.format("%d",model.getState().getInfo().getPoints_a()),186,10+getStringHeight("A",fhd)+getStringHeight("789",fhd));
+            gc.fillText(String.format("%d", model.getState().getInfo().getPoints_a()), 186, 10 + getStringHeight("A", fhd) + getStringHeight("789", fhd));
 
             gc.setFill(Color.RED);
             gc.setFont(fhd);
-            gc.fillText("B",196+wdth+wdth2/2-getStringWidth("B",fhd)/2,5+getStringHeight("B",fhd));
+            gc.fillText("B", 196 + wdth + wdth2 / 2 - getStringWidth("B", fhd) / 2, 5 + getStringHeight("B", fhd));
 
             gc.setFill(Color.BLACK);
             gc.setFont(fd);
-            gc.fillText(String.format("%d",model.getState().getInfo().getPoints_b()),196+wdth,10+getStringHeight("A",fhd)+getStringHeight("789",fhd));
+            gc.fillText(String.format("%d", model.getState().getInfo().getPoints_b()), 196 + wdth, 10 + getStringHeight("A", fhd) + getStringHeight("789", fhd));
 
         }
     }
 
-    private void drawRockets() {
-        for (Rocket r : model.getRockets()) {
+    private void drawRocket() {
+        Rocket rocket = model.getRocket();
+        if (rocket != null) {
             gc.setFill(Color.RED);
-            gc.fillOval(r.getPosition().getxCoord() - 3, r.getPosition().getyCoord() - 3, 6, 6);
+            gc.fillOval(rocket.getPosition().getxCoord() - 3, rocket.getPosition().getyCoord() - 3, 6, 6);
         }
     }
 
@@ -219,7 +220,8 @@ public class ServerViewController implements Initializable {
 
     private void drawBackground() {
         if (model.getWorld().isWorldChanged()) {
-            //model.getWorld().setWorldChanged();
+            model.getWorld().setWorldChanged();
+
             GraphicsContext gcgf = canvas_gamefield.getGraphicsContext2D();
             gcgf.clearRect(0, 0, canvas_gamefield.getWidth(), canvas_gamefield.getHeight());
             for (Surface surface : model.getWorld().getGameWorld()) {
@@ -247,6 +249,7 @@ public class ServerViewController implements Initializable {
         l.setFont(font);
         return l.getLayoutBounds().getWidth();
     }
+
     public double getStringHeight(String text, Font font) {
         Text l = new Text(text);
         l.setFont(font);

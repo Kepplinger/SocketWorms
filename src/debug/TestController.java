@@ -1,5 +1,8 @@
 package debug;
 
+import connectionObjects.Package;
+import connectionObjects.Request;
+import connectionObjects.RequestType;
 import gameobjects.Explosion;
 import gameobjects.Point;
 import gameobjects.Rocket;
@@ -7,10 +10,17 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Alert;
 import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
 import gameobjects.GameWorld;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.ConnectException;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.net.URL;
 import java.util.*;
 
@@ -24,13 +34,58 @@ public class TestController implements Initializable {
     private GameWorld gameWorld;
     private Timer timer;
     private Rocket rocket1;
-    private Rocket rocket2;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
         gameWorld = new GameWorld((int) canvas.getWidth(), (int) canvas.getHeight());
         gc = canvas.getGraphicsContext2D();
+
+        Socket csocket;
+
+        try {
+
+            csocket = new Socket();
+            csocket.connect(new InetSocketAddress("localhost", 7918), 10000);
+
+            Timer t = new Timer(true);
+            t.scheduleAtFixedRate(new TimerTask() {
+
+                ObjectOutputStream outputStream;
+                ObjectInputStream inputStream;
+
+                @Override
+                public void run() {
+
+                    try {
+
+                        if (csocket == null || csocket.isClosed()){
+                            csocket.connect(new InetSocketAddress("localhost", 7918), 10000);
+                        }
+
+                        outputStream = new ObjectOutputStream(csocket.getOutputStream());
+                        outputStream.writeObject(new Request(RequestType.RETURN_PACKAGE));
+
+                        inputStream = new ObjectInputStream(csocket.getInputStream());
+                        Package serverPackage = (Package) inputStream.readObject();
+
+                        System.out.println("Punkte der Hauptoberfläche: " + serverPackage);
+
+                    } catch (ConnectException e) {
+                        System.out.println("[C] Verbindung verloren!");
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    } catch (ClassNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }, 0, 30);
+
+        } catch (Exception ex) {
+            new Alert(Alert.AlertType.ERROR,"Master Caution!!!!").showAndWait();
+        }
+
+
 
         timer = new Timer(true);
         timer.schedule(new TimerTask() {
@@ -40,13 +95,6 @@ public class TestController implements Initializable {
                     Explosion explosion = rocket1.fly(gameWorld);
                     if (explosion != null) {
                         rocket1 = null;
-                        gameWorld.destroySurface(explosion);
-                    }
-                }
-                if (rocket2 != null) {
-                    Explosion explosion = rocket2.fly(gameWorld);
-                    if (explosion != null) {
-                        rocket2 = null;
                         gameWorld.destroySurface(explosion);
                     }
                 }
@@ -71,7 +119,6 @@ public class TestController implements Initializable {
                 gc.fillPolygon(xCoord, grasYCoord, explosion.getBorder().length);
             } else if (event.getButton().equals(MouseButton.MIDDLE)) {
                 rocket1 = new Rocket(new Point((int) event.getX(), (int) event.getY()), 45, 45);
-                rocket2 = new Rocket(new Point((int) event.getX(), (int) event.getY()), 45, -225);
             } else {
                 System.out.println(gameWorld.containsPoint(new Point((int) event.getX(), (int) event.getY())));
                 gameWorld.getNearestPoint(new Point((int) event.getX(), (int) event.getY()));
@@ -107,10 +154,6 @@ public class TestController implements Initializable {
         if (rocket1 != null) {
             gc.setFill(Color.RED);
             gc.fillOval(rocket1.getPosition().getxCoord() - 3, rocket1.getPosition().getyCoord() - 3, 6, 6);
-        }
-        if (rocket2 != null) {
-            gc.setFill(Color.RED);
-            gc.fillOval(rocket2.getPosition().getxCoord() - 3, rocket2.getPosition().getyCoord() - 3, 6, 6);
         }
     }
 }

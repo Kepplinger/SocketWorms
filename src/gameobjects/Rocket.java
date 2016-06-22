@@ -13,12 +13,15 @@ import java.util.List;
  * übergebenen Gschwindigkeit berechnen.
  */
 public class Rocket {
+
     private Point start;
     private double initSpeed;
     private int initialX;
     private int initialY;
     private double xSpeed;
     private double ySpeed;
+    private boolean exploded;
+    private double angle;
 
     public Rocket(Point startPoint, double initialSpeed, double angle) {
         start = startPoint;
@@ -31,9 +34,14 @@ public class Rocket {
         ySpeed = Math.sin(Math.toRadians(angle)) * initSpeed;
 
         start.setyCoord(startPoint.getyCoord() - 20);
+
+        exploded = false;
+
+        this.angle = angle;
     }
 
     private Explosion explode(Point destination) {
+        exploded = true;
         return new Explosion(new Point(destination.getxCoord(), destination.getyCoord()));
     }
 
@@ -101,6 +109,14 @@ public class Rocket {
 
     public Point getPosition() {
         return new Point(initialX, initialY);
+    }
+
+    public boolean isExploded() {
+        return exploded;
+    }
+
+    public double getAngle() {
+        return angle;
     }
 
     private double getDistance(Point point1, Point point2) {

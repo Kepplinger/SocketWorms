@@ -1,10 +1,10 @@
 package client;
 
+import connectionObjects.Package;
+import connectionObjects.Request;
+import connectionObjects.RequestType;
 import gameobjects.*;
-import gameobjects.Package;
-import javafx.application.Platform;
 import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -12,15 +12,12 @@ import java.io.ObjectOutputStream;
 import java.net.ConnectException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.net.SocketTimeoutException;
 import java.util.*;
 
 /**
  * Created by Andreas on 24.05.2016.
  */
 public class ClientModel extends Observable {
-    private static ClientModel singelton;
-
 
     private String serverIP;
 
@@ -28,15 +25,17 @@ public class ClientModel extends Observable {
     private Player currentPlayer;
 
     private List<Player> otherPlayers;
-    private List<Rocket> rockets;
+    private Rocket rocket;
     private GameWorld world;
 
-    private int worldRequest = 32;
     private Socket csocket = null;
 
-    private ClientModel() {
+    public ClientModel(String ip, Player player) {
+
+        serverIP = ip;
+        localPlayer = player;
+
         otherPlayers = new LinkedList<>();
-        rockets = new LinkedList<>();
 
         try {
 
@@ -45,52 +44,32 @@ public class ClientModel extends Observable {
 
             Timer t = new Timer(true);
             t.scheduleAtFixedRate(new TimerTask() {
+
+                ObjectOutputStream outputStream;
+                ObjectInputStream inputStream;
+
                 @Override
                 public void run() {
-//
+
                     try {
 
                         if (csocket == null || csocket.isClosed()){
                             csocket.connect(new InetSocketAddress(getServerIP(), 7918), 10000);
                         }
 
-                        //System.out.println("Neue Datenabfrage");
-                        if (getServerIP() != null) {
-                            double initial = System.nanoTime();
+                        outputStream = new ObjectOutputStream(csocket.getOutputStream());
+                        outputStream.writeObject(new Request(RequestType.RETURN_PACKAGE));
 
-                            System.out.println(System.nanoTime() - initial);
-                            ObjectOutputStream out = new ObjectOutputStream(csocket.getOutputStream());
+                        inputStream = new ObjectInputStream(csocket.getInputStream());
+                        Package serverPackage = (Package) inputStream.readObject();
 
-                            synchronized (otherPlayers) {
+                        currentPlayer = serverPackage.getCurrentPlayer();
+                        world = serverPackage.getWorld();
+                        rocket = serverPackage.getRocket();
 
-                                if (world == null && otherPlayers.size() == 0 || worldRequest == 0) {
-                                    out.writeObject(UpdateInformation.World_a_Player);
-                                } else if (world == null) {
-                                    out.writeObject(UpdateInformation.World);
-                                } else {
-                                    out.writeObject(UpdateInformation.Player);
-                                }
-                                ObjectInputStream in = new ObjectInputStream(csocket.getInputStream());
+                        setChanged();
+                        notifyObservers();
 
-                                Package p = (Package) in.readObject();
-                                if (p.getWorld() != null)
-                                    world = p.getWorld();
-                                if (p.getCurrentPlayer() != null)
-                                    currentPlayer = p.getCurrentPlayer();
-                                otherPlayers = p.getPlayers();
-
-                                if (otherPlayers != null && otherPlayers.size() > 0 && otherPlayers.contains(localPlayer)) {
-                                    localPlayer = otherPlayers.get(otherPlayers.indexOf(localPlayer));
-                                    otherPlayers.remove(otherPlayers.indexOf(localPlayer));
-                                    if (localPlayer.equals(currentPlayer)) {
-                                        sendData();
-                                    }
-                                } else {
-                                    sendData();
-                                }
-                            }
-                            //System.out.println("[Client] Daten empfangen.");
-                        }
                     } catch (ConnectException e) {
                         System.out.println("[C] Verbindung verloren!");
                     } catch (IOException ex) {
@@ -98,11 +77,8 @@ public class ClientModel extends Observable {
                     } catch (ClassNotFoundException e) {
                         e.printStackTrace();
                     }
-                    worldRequest--;
-                    if (worldRequest < 0)
-                        worldRequest = 32;
                 }
-            }, 0, 20);
+            }, 0, 30);
 
         } catch (Exception ex) {
             new Alert(Alert.AlertType.ERROR,"Master Caution!!!!").showAndWait();
@@ -112,10 +88,6 @@ public class ClientModel extends Observable {
 
     public Player getLocalPlayer() {
         return localPlayer;
-    }
-
-    public void setLocalPlayer(Player player) {
-        this.localPlayer = player;
     }
 
     public synchronized List<Player> getOtherPlayers() {
@@ -129,19 +101,12 @@ public class ClientModel extends Observable {
         return serverIP;
     }
 
-    public void setServerIP(String serverIP) {
-        this.serverIP = serverIP;
+    public Rocket getRocket() {
+        return rocket;
     }
 
-
-    public static ClientModel getInstance() {
-        if (singelton == null)
-            singelton = new ClientModel();
-        return singelton;
-    }
-
-    public List<Rocket> getRockets() {
-        return rockets;
+    public void setRocket(Rocket rocket) {
+        this.rocket = rocket;
     }
 
     public GameWorld getWorld() {
@@ -159,7 +124,7 @@ public class ClientModel extends Observable {
     }
 
     public void sendData() {
-        Thread t = new Thread(() -> {
+        Thread thread = new Thread(() -> {
             Socket csocket = null;
             try {
                 csocket = new Socket();
@@ -167,13 +132,12 @@ public class ClientModel extends Observable {
                 ObjectOutputStream out = new ObjectOutputStream(csocket.getOutputStream());
 
                 out.writeObject(getLocalPlayer());
-                //System.out.println("[Client] Daten gesendet!");
                 csocket.close();
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
         });
-        t.setDaemon(true);
-        t.start();
+        thread.setDaemon(true);
+        thread.start();
     }
 }

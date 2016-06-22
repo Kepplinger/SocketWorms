@@ -121,17 +121,6 @@ public class Player implements Serializable {
         return obj instanceof Player && ((Player) obj).getName().equals(this.getName());
     }
 
-    @Override
-    public String toString() {
-        return "Player{" +
-                "name='" + name + '\'' +
-                ", position=" + position +
-                ", fallingspeed=" + fallingspeed +
-                ", health=" + health +
-                ", ownShoot=" + ownShoot +
-                '}';
-    }
-
     public boolean isCurrent() {
         return isCurrent;
     }
@@ -176,7 +165,6 @@ public class Player implements Serializable {
     public void heal(int hp) {
         if (hp < 0)
             throw new IllegalArgumentException("Der Spieler wird nicht geheilt!");
-
         if (hp >= 100) {
             health = 100;
         } else {
@@ -186,5 +174,17 @@ public class Player implements Serializable {
 
     public boolean hasChanged() {
         return changed;
+    }
+
+
+    @Override
+    public String toString() {
+        return "Player{" +
+                "name='" + name + '\'' +
+                ", position=" + position +
+                ", fallingspeed=" + fallingspeed +
+                ", health=" + health +
+                ", ownShoot=" + ownShoot +
+                '}';
     }
 }

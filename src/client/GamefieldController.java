@@ -1,5 +1,6 @@
 package client;
 
+import connectionObjects.Package;
 import controller.Painter;
 import gameobjects.*;
 import gameobjects.Point;
@@ -30,7 +31,7 @@ import java.util.List;
 /**
  * Created by Andreas on 24.05.2016.
  */
-public class GamefieldController implements Initializable {
+public class GamefieldController implements Initializable, Observer {
 
     @FXML
     public Canvas canvas_gamefield;
@@ -49,7 +50,9 @@ public class GamefieldController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        model = ClientModel.getInstance();
+        model = LoginController.getInstance().getModel();
+        model.addObserver(this);
+
         gc = canvas.getGraphicsContext2D();
         hudgc = cv_hud.getGraphicsContext2D();
 
@@ -82,7 +85,7 @@ public class GamefieldController implements Initializable {
                 if (model.getCurrentPlayer().equals(model.getLocalPlayer())) {
                     if (event.getCode() == KeyCode.ENTER) {
                         double speed = model.getCurrentPlayer().getShoot().getCurrentSpeed() * 90;
-                        model.getRockets().add(new Rocket(model.getLocalPlayer().getPosition(), speed, model.getCurrentPlayer().getShoot().getAngle()));
+                        model.setRocket(new Rocket(model.getLocalPlayer().getPosition(), speed, model.getCurrentPlayer().getShoot().getAngle()));
                         model.getLocalPlayer().getShoot().setFired(true);
                         model.sendData();
                     }
@@ -128,29 +131,21 @@ public class GamefieldController implements Initializable {
                                                   }
 
                                           );
-                                          Thread background = new Thread(() -> {
-                                              Platform.runLater(() -> {
-                                                  drawBackground();
-                                                  drawPlayers();
-                                                  drawRockets();
-                                                  drawForground();
-                                              });
-                                          });
-                                          background.setDaemon(true);
-                                          background.start();
                                       }
                                   }
                 , 100, 35);
     }
 
     private void drawRockets() {
-        for (Rocket r : model.getRockets()) {
-            Explosion explosion = r.fly(model.getWorld());
+
+        Rocket rocket = model.getRocket();
+
+        if (rocket != null) {
+            Explosion explosion = rocket.fly(model.getWorld());
             if (explosion == null) {
                 gc.setFill(Color.RED);
-                gc.fillOval(r.getPosition().getxCoord() - 3, r.getPosition().getyCoord() - 3, 6, 6);
+                gc.fillOval(rocket.getPosition().getxCoord() - 3, rocket.getPosition().getyCoord() - 3, 6, 6);
             } else {
-                model.getRockets().remove(r);
                 explosion.calculateDamage(model.getPlayers());
                 model.getWorld().destroySurface(explosion);
 
@@ -193,26 +188,27 @@ public class GamefieldController implements Initializable {
 
     }
 
+    /**
+     * Draws the GameWorld
+     */
     private void drawBackground() {
         if (model.getWorld() != null) {
             GraphicsContext gcgf = canvas_gamefield.getGraphicsContext2D();
-            if (ClientModel.getInstance().getWorld().isWorldChanged()) {
-                //System.out.println("[Client] Welt gezeichnet!");
-                ClientModel.getInstance().getWorld().setWorldChanged();
-                gcgf.clearRect(0, 0, canvas_gamefield.getWidth(), canvas_gamefield.getHeight());
-                for (Surface surface : ClientModel.getInstance().getWorld().getGameWorld()) {
-                    gcgf.setStroke(Color.GREEN);
-                    gcgf.setLineWidth(5);
-                    gcgf.strokePolygon(surface.getxCoords(), surface.getyCoords(), surface.getxCoords().length);
-                }
+
+            model.getWorld().setWorldChanged();
+            gcgf.clearRect(0, 0, canvas_gamefield.getWidth(), canvas_gamefield.getHeight());
+            for (Surface surface : model.getWorld().getGameWorld()) {
+                gcgf.setStroke(Color.GREEN);
+                gcgf.setLineWidth(5);
+                gcgf.strokePolygon(surface.getxCoords(), surface.getyCoords(), surface.getxCoords().length);
+            }
 
 
-                for (int i = 0; i < ClientModel.getInstance().getWorld().getGameWorld().size(); i++) {
-                    gcgf.setFill(Color.DARKGRAY);
-                    gcgf.fillPolygon(ClientModel.getInstance().getWorld().getGameWorld().get(i).getxCoords(),
-                            ClientModel.getInstance().getWorld().getGameWorld().get(i).getyCoords(),
-                            ClientModel.getInstance().getWorld().getGameWorld().get(i).getxCoords().length);
-                }
+            for (int i = 0; i < model.getWorld().getGameWorld().size(); i++) {
+                gcgf.setFill(Color.DARKGRAY);
+                gcgf.fillPolygon(model.getWorld().getGameWorld().get(i).getxCoords(),
+                        model.getWorld().getGameWorld().get(i).getyCoords(),
+                        model.getWorld().getGameWorld().get(i).getxCoords().length);
             }
         }
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
@@ -293,5 +289,15 @@ public class GamefieldController implements Initializable {
         Text l = new Text(text);
         l.setFont(font);
         return l.getLayoutBounds().getWidth();
+    }
+
+    @Override
+    public void update(Observable o, Object arg) {
+        Platform.runLater(() -> {
+            drawBackground();
+//            drawPlayers();
+//            drawRockets();
+//            drawForground();
+        });
     }
 }

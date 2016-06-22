@@ -24,6 +24,9 @@ import java.util.ResourceBundle;
  * Created by Andreas on 24.05.2016.
  */
 public class LoginController implements Initializable{
+
+    public static LoginController instance;
+
     public TextField tf_serverip;
     public TextField tf_playername;
     public VBox mainPane;
@@ -32,18 +35,26 @@ public class LoginController implements Initializable{
     public ImageView iv_skin;
 
     private int skinID = 0;
+    private ClientModel model;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        instance = this;
+    }
+
+    public ClientModel getModel() {
+        return model;
+    }
+
+    public static LoginController getInstance() {
+        return instance;
     }
 
     public void connect(ActionEvent actionEvent) {
-        ClientModel.getInstance().setLocalPlayer(new Player(tf_playername.getText(),skinID));
-        ClientModel.getInstance().setServerIP(tf_serverip.getText());
-        //ClientModel.getInstance().sendData();
+        model = new ClientModel(tf_serverip.getText(), new Player(tf_playername.getText(),skinID));
 
         Stage stage = new Stage();
-        Parent root = null;
+        Parent root;
         try {
             root = FXMLLoader.load(getClass().getResource("view/Gamefield.fxml"));
             stage.setTitle("WORMS - "+tf_serverip.getText() + " ["+tf_playername.getText()+"]");
