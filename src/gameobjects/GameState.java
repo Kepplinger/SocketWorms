@@ -57,16 +57,16 @@ public class GameState implements Serializable {
         left_TeamB = new LinkedList<>(teamB.values());
 
         if (getDeadPlayer(teamA.values()).size() == teamA.size()) {
-            info.setPoints_b(info.getPoints_b() + getDeadPlayer(teamB.values()).size() == 0 ? 3 : getDeadPlayer(teamB.values()).size() < teamB.size() ? 2 : 1);
-            for (Player p : teamA.values()) {
-                p.heal(100);
-            }
+            int rec = getDeadPlayer(teamB.values()).size() == 0 ? 3 : getDeadPlayer(teamB.values()).size() < teamB.size() ? 2 : 1;
+            info.setPoints_b(info.getPoints_b() + rec);
+            healPlayer();
+            replacePlayers();
             System.out.println("[S] Team B hat Punkte bekommen.");
         } else if (getDeadPlayer(teamB.values()).size() == teamB.size()) {
-            info.setPoints_a(info.getPoints_a() + getDeadPlayer(teamA.values()).size() == 0 ? 3 : getDeadPlayer(teamA.values()).size() < teamA.size() ? 2 : 1);
-            for (Player p : teamA.values()) {
-                p.heal(100);
-            }
+            int rec = info.getPoints_a() + getDeadPlayer(teamA.values()).size() == 0 ? 3 : getDeadPlayer(teamA.values()).size() < teamA.size() ? 2 : 1;
+            info.setPoints_a(info.getPoints_a() + rec);
+            healPlayer();
+            replacePlayers();
             System.out.println("[S] Team A hat Punkte bekommen.");
         }
         System.out.println("[S] Neue Runde.");
@@ -150,5 +150,18 @@ public class GameState implements Serializable {
         info.setCurDeaths_A(getDeadPlayer(teamA.values()).size());
         info.setCurDeaths_B(getDeadPlayer(teamB.values()).size());
         return info;
+    }
+
+    public void healPlayer(){
+        for (Player p : players) {
+            p.heal(100);
+        }
+    }
+    public void replacePlayers(){
+        for (Player p : players) {
+            Random random = new Random();
+            int x = random.nextInt(1000) + 20;
+            p.setPosition(new Point(x, 20));
+        }
     }
 }
