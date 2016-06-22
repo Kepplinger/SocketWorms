@@ -12,12 +12,14 @@ import java.util.List;
 public class Package implements Serializable {
 
     private GameInfo info;
+    private List<Rocket> rockets;
     private List<Player> players;
     private Player currentPlayer;
     private GameWorld world;
 
-    public Package(GameInfo info, List<Player> players, GameWorld world, Player currentPlayer) {
+    public Package(GameInfo info, List<Rocket> rockets, List<Player> players, Player currentPlayer, GameWorld world) {
         this.info = info;
+        this.rockets = rockets;
         this.players = players;
         this.currentPlayer = currentPlayer;
         this.world = world;
@@ -37,5 +39,9 @@ public class Package implements Serializable {
 
     public List<Player> getPlayers() {
         return players;
+    }
+
+    public List<Rocket> getRockets() {
+        return rockets;
     }
 }

@@ -28,7 +28,6 @@ public class ClientModel extends Observable {
     private Player currentPlayer;
 
     private List<Player> otherPlayers;
-    private List<Rocket> rockets;
     private GameWorld world;
 
     private int worldRequest = 32;
@@ -36,7 +35,6 @@ public class ClientModel extends Observable {
 
     private ClientModel() {
         otherPlayers = new LinkedList<>();
-        rockets = new LinkedList<>();
 
         try {
 
@@ -47,7 +45,7 @@ public class ClientModel extends Observable {
             t.scheduleAtFixedRate(new TimerTask() {
                 @Override
                 public void run() {
-//
+
                     try {
 
                         if (csocket == null || csocket.isClosed()){
@@ -138,10 +136,6 @@ public class ClientModel extends Observable {
         if (singelton == null)
             singelton = new ClientModel();
         return singelton;
-    }
-
-    public List<Rocket> getRockets() {
-        return rockets;
     }
 
     public GameWorld getWorld() {
