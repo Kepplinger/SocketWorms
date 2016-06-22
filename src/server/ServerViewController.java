@@ -141,6 +141,55 @@ public class ServerViewController implements Initializable {
             //Localplayersign
             gc.drawImage(new Image("/images/current_arrow.png"), model.getCurrentPlayer().getPosition().getxCoord() - 6,
                     model.getCurrentPlayer().getPosition().getyCoord() - 40, 11, 10);
+
+
+            //STATS
+            Font fhd = new Font("System",14);
+            Font fd = new Font("System",16);
+            gc.drawImage(new Image("/images/dead.png"),2,(10+getStringHeight("A",fhd)+getStringHeight("789",fhd))/2-16,32,32);
+
+            double wdth = getStringWidth(String.valueOf(model.getState().getInfo().getCurDeaths_A()),fhd);
+            double wdth2 = getStringWidth(String.valueOf(model.getState().getInfo().getCurDeaths_B()),fhd);
+
+            gc.setFont(fhd);
+            gc.setFill(Color.RED);
+            gc.fillText("A",36+wdth/2-getStringWidth("A",fhd)/2,5+getStringHeight("A",fhd));
+
+            gc.setFill(Color.BLACK);
+            gc.setFont(fd);
+            gc.fillText(String.format("%d",model.getState().getInfo().getCurDeaths_A()),36,10+getStringHeight("A",fhd)+getStringHeight("789",fhd));
+
+            gc.setFill(Color.RED);
+            gc.setFont(fhd);
+            gc.fillText("B",46+wdth+wdth2/2-getStringWidth("B",fhd)/2,5+getStringHeight("B",fhd));
+
+            gc.setFill(Color.BLACK);
+            gc.setFont(fd);
+            gc.fillText(String.format("%d",model.getState().getInfo().getCurDeaths_B()),46+wdth,10+getStringHeight("A",fhd)+getStringHeight("789",fhd));
+
+
+            //Points
+            gc.drawImage(new Image("/images/badge.png"),150,(10+getStringHeight("A",fhd)+getStringHeight("789",fhd))/2-16,32,32);
+
+            wdth = getStringWidth(String.valueOf(model.getState().getInfo().getPoints_a()),fhd);
+            wdth2 = getStringWidth(String.valueOf(model.getState().getInfo().getPoints_b()),fhd);
+
+            gc.setFont(fhd);
+            gc.setFill(Color.RED);
+            gc.fillText("A",186+wdth/2-getStringWidth("A",fhd)/2,5+getStringHeight("A",fhd));
+
+            gc.setFill(Color.BLACK);
+            gc.setFont(fd);
+            gc.fillText(String.format("%d",model.getState().getInfo().getPoints_a()),186,10+getStringHeight("A",fhd)+getStringHeight("789",fhd));
+
+            gc.setFill(Color.RED);
+            gc.setFont(fhd);
+            gc.fillText("B",196+wdth+wdth2/2-getStringWidth("B",fhd)/2,5+getStringHeight("B",fhd));
+
+            gc.setFill(Color.BLACK);
+            gc.setFont(fd);
+            gc.fillText(String.format("%d",model.getState().getInfo().getPoints_b()),196+wdth,10+getStringHeight("A",fhd)+getStringHeight("789",fhd));
+
         }
     }
 
@@ -200,5 +249,10 @@ public class ServerViewController implements Initializable {
         Text l = new Text(text);
         l.setFont(font);
         return l.getLayoutBounds().getWidth();
+    }
+    public double getStringHeight(String text, Font font) {
+        Text l = new Text(text);
+        l.setFont(font);
+        return l.getLayoutBounds().getHeight();
     }
 }

@@ -15,7 +15,6 @@ public class Player implements Serializable {
     private Shoot ownShoot;
     private boolean isCurrent;
     private String team;
-    private boolean dead = false;
 
     private int wormSkin = 0;
 
