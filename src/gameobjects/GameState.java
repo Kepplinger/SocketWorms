@@ -87,7 +87,7 @@ public class GameState implements Serializable {
         }
 
 
-        if (round <= 0) {
+        if (round <= 0 && left_TeamA.size()>0&&left_TeamB.size()>0) {
             if (new Random().nextInt(2) == 0) {
                 next = left_TeamB.get(0);
                 left_TeamB.remove(0);
@@ -136,7 +136,7 @@ public class GameState implements Serializable {
 
     private List<Player> getDeadPlayer(Collection<Player> plyrs) {
         List<Player> pl = new ArrayList<>();
-        for (Player p : players) {
+        for (Player p : plyrs) {
             if (p.isDead()) {
                 pl.add(p);
             }

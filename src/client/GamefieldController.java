@@ -180,12 +180,12 @@ public class GamefieldController implements Initializable {
 
                     if (!p.isDead()) {
                         if (p.getShoot().getAngle() < 90 && p.getShoot().getAngle() > -90) {
-                            gcPl.drawImage(new Image(String.format("/images/worms/Rworm%d.png", p.getWormSkin())), x - 4, y - 16, 8, 16);
+                            gcPl.drawImage(new Image(String.format("/images/worms/Rworm%d.png", p.getWormSkin())), x - 6, y - 18, 12, 18);
                         } else {
-                            gcPl.drawImage(new Image(String.format("/images/worms/worm%d.png", p.getWormSkin())), x - 4, y - 16, 8, 16);
+                            gcPl.drawImage(new Image(String.format("/images/worms/worm%d.png", p.getWormSkin())), x - 6, y - 18, 12, 18);
                         }
                     } else {
-                        gcPl.drawImage(new Image("/images/grave.png"), x - 4, y - 12, 8, 12);
+                        gcPl.drawImage(new Image("/images/grave.png"), x - 6, y - 18, 12, 18);
                     }
                 }
             }
@@ -201,7 +201,8 @@ public class GamefieldController implements Initializable {
                 ClientModel.getInstance().getWorld().setWorldChanged();
                 gcgf.clearRect(0, 0, canvas_gamefield.getWidth(), canvas_gamefield.getHeight());
                 for (Surface surface : ClientModel.getInstance().getWorld().getGameWorld()) {
-                    gcgf.setFill(Color.GREEN);
+                    gcgf.setStroke(Color.GREEN);
+                    gcgf.setLineWidth(5);
                     gcgf.strokePolygon(surface.getxCoords(), surface.getyCoords(), surface.getxCoords().length);
                 }
 
@@ -240,7 +241,7 @@ public class GamefieldController implements Initializable {
                     } else {
                         gc.setFill(Color.RED);
                         gc.setFont(new Font("System", 10));
-                        gc.fillText(p.getName(), p.getPosition().getxCoord() - (getStringWidth(p.getName(), new Font("System", 10)) / 2), p.getPosition().getyCoord() - 15);
+                        gc.fillText(p.getName(), p.getPosition().getxCoord() - (getStringWidth(p.getName(), new Font("System", 10)) / 2), p.getPosition().getyCoord() - 25);
                     }
                 }
             }

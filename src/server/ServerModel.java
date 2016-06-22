@@ -68,12 +68,12 @@ public class ServerModel {
             }
         }, 50, 5);
         Thread serverConnection = new Thread(() -> {
-            //state.join(new Player("Sepp"));
-            //state.join(new Player("Mehmet"));
-            //state.join(new Player("Franz"));
-            //state.join(new Player("Gustav"));
-            //state.join(new Player("Herbert"));
-            //state.join(new Player("Günther"));
+            state.join(new Player("Sepp"));
+            state.join(new Player("Mehmet"));
+            state.join(new Player("Franz"));
+            state.join(new Player("Gustav"));
+            state.join(new Player("Hans"));
+            state.join(new Player("Günther"));
 
             try {
                 ServerSocket socket = new ServerSocket(7918);
@@ -129,6 +129,14 @@ public class ServerModel {
         serverConnection.setDaemon(true);
         serverConnection.setName("ServerConnection-Thread");
         serverConnection.start();
+
+        Timer timer = new Timer(true);
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                players.get(new Random().nextInt(players.size())).removeHealth(100);
+            }
+        },100,3000);
     }
 
     public String getServerIP() {
