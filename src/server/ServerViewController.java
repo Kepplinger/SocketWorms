@@ -84,10 +84,6 @@ public class ServerViewController implements Initializable {
                 background.start();
             }
         }, 100, 50);
-
-        //drawBackground();
-        //drawPlayers();
-        //drawRockets();
     }
 
     private void drawForground() {
@@ -227,7 +223,8 @@ public class ServerViewController implements Initializable {
             GraphicsContext gcgf = canvas_gamefield.getGraphicsContext2D();
             gcgf.clearRect(0, 0, canvas_gamefield.getWidth(), canvas_gamefield.getHeight());
             for (Surface surface : model.getWorld().getGameWorld()) {
-                gcgf.setFill(Color.GREEN);
+                gcgf.setStroke(Color.GREEN);
+                gcgf.setLineWidth(5);
                 gcgf.strokePolygon(surface.getxCoords(), surface.getyCoords(), surface.getxCoords().length);
             }
 

@@ -202,7 +202,8 @@ public class GamefieldController implements Initializable {
                 ClientModel.getInstance().getWorld().setWorldChanged();
                 gcgf.clearRect(0, 0, canvas_gamefield.getWidth(), canvas_gamefield.getHeight());
                 for (Surface surface : ClientModel.getInstance().getWorld().getGameWorld()) {
-                    gcgf.setFill(Color.GREEN);
+                    gcgf.setStroke(Color.GREEN);
+                    gcgf.setLineWidth(5);
                     gcgf.strokePolygon(surface.getxCoords(), surface.getyCoords(), surface.getxCoords().length);
                 }
 
