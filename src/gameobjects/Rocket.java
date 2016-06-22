@@ -14,20 +14,20 @@ public class Rocket {
     private double initSpeed;
     private int initialX;
     private int initialY;
-    private double angle;
     private double xSpeed;
     private double ySpeed;
 
     public Rocket(Point startPoint, double initialSpeed, double angle) {
         start = startPoint;
         initSpeed = initialSpeed;
-        this.angle = angle;
 
         initialX = start.getxCoord();
         initialY = start.getyCoord();
 
         xSpeed = Math.cos(Math.toRadians(angle)) * initSpeed;
         ySpeed = Math.sin(Math.toRadians(angle)) * initSpeed;
+
+        start.setyCoord(startPoint.getyCoord() - 20);
     }
 /*
     public Point calculateFlightPath(GraphicsContext gc, GameWorld world) {
@@ -77,17 +77,6 @@ public class Rocket {
         return new Point(-1,-1);
     }*/
 
-    private Point drawFlightPath(List<Point> points, GraphicsContext gc) {
-        double[] xPoints = new double[points.size()];
-        double[] yPoints = new double[points.size()];
-        for (int i = 0; i < points.size(); i++) {
-            xPoints[i] = points.get(i).getxCoord();
-            yPoints[i] = points.get(i).getyCoord();
-        }
-        gc.strokePolyline(xPoints, yPoints, points.size());
-        return new Point((int) xPoints[points.size() - 1], (int) yPoints[points.size() - 1]);
-    }
-
     private Explosion explode(Point destination) {
         return new Explosion(new Point(destination.getxCoord(), destination.getyCoord()));
     }
@@ -104,10 +93,17 @@ public class Rocket {
         int finalX;
         int finalY;
 
+        double cnt;
+
         if (initialY <= 576) {
-            ySpeed = (ySpeed - GRAVITATIONAL_CONSTANT);
+            ySpeed = Math.max((ySpeed - GRAVITATIONAL_CONSTANT), -20);
+            if (xSpeed > 5)
+                xSpeed--;
+            if (xSpeed < -5)
+                xSpeed++;
+
             finalX = (int) (initialX + Math.round(xSpeed));
-            finalY = (int) (initialY - ySpeed);
+            finalY = (int) (initialY -  Math.round(ySpeed));
 
             currentX = initialX;
             currentY = initialY;
@@ -117,22 +113,26 @@ public class Rocket {
             double moveX = (finalX - initialX) / xSpeed;
             double moveY = (finalY - initialY) / ySpeed;
 
+            cnt = Math.abs(xSpeed);
+
             Point currentPoint = new Point(0, 0);
 
             do {
+
+                cnt -= Math.abs(moveX);
+
                 currentX = currentX + moveX;
                 currentY = currentY + moveY;
                 currentPoint.setxCoord((int) currentX);
                 currentPoint.setyCoord((int) currentY);
 
-
-                if (getDistance(world.getNearestPoint(currentPoint), currentPoint) < 100) {
-                    if (world.containsPoint(new Point((int) currentX, (int) currentY))) {
-                        return explode(new Point((int) currentX, (int) currentY));
+                if (getDistance(world.getNearestPoint(currentPoint), currentPoint) < 20) {
+                    if (getDistance(world.getNearestPoint(currentPoint), currentPoint) < 5 || world.containsPoint(currentPoint)) {
+                        return explode(currentPoint);
                     }
                 }
 
-            } while (Math.round(currentX) != finalX && Math.round(currentY) != finalY);
+            } while (cnt > 0);
 
             initialX = finalX;
             initialY = finalY;

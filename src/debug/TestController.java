@@ -23,7 +23,8 @@ public class TestController implements Initializable {
     private GraphicsContext gc;
     private GameWorld gameWorld;
     private Timer timer;
-    private Rocket rocket;
+    private Rocket rocket1;
+    private Rocket rocket2;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -35,10 +36,17 @@ public class TestController implements Initializable {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                if (rocket != null) {
-                    Explosion explosion = rocket.fly(gameWorld);
+                if (rocket1 != null) {
+                    Explosion explosion = rocket1.fly(gameWorld);
                     if (explosion != null) {
-                        rocket = null;
+                        rocket1 = null;
+                        gameWorld.destroySurface(explosion);
+                    }
+                }
+                if (rocket2 != null) {
+                    Explosion explosion = rocket2.fly(gameWorld);
+                    if (explosion != null) {
+                        rocket2 = null;
                         gameWorld.destroySurface(explosion);
                     }
                 }
@@ -62,7 +70,8 @@ public class TestController implements Initializable {
                 gc.setFill(Color.RED);
                 gc.fillPolygon(xCoord, grasYCoord, explosion.getBorder().length);
             } else if (event.getButton().equals(MouseButton.MIDDLE)) {
-                rocket = new Rocket(new Point((int) event.getX(), (int) event.getY()), 45, 45);
+                rocket1 = new Rocket(new Point((int) event.getX(), (int) event.getY()), 45, 45);
+                rocket2 = new Rocket(new Point((int) event.getX(), (int) event.getY()), 45, -225);
             } else {
                 System.out.println(gameWorld.containsPoint(new Point((int) event.getX(), (int) event.getY())));
                 gameWorld.getNearestPoint(new Point((int) event.getX(), (int) event.getY()));
@@ -95,9 +104,13 @@ public class TestController implements Initializable {
         gc.setLineWidth(2);
         //gc.strokeRect(0, 0, canvas.getWidth(), canvas.getHeight());
 
-        if (rocket != null) {
+        if (rocket1 != null) {
             gc.setFill(Color.RED);
-            gc.fillOval(rocket.getPosition().getxCoord() - 3, rocket.getPosition().getyCoord() - 3, 6, 6);
+            gc.fillOval(rocket1.getPosition().getxCoord() - 3, rocket1.getPosition().getyCoord() - 3, 6, 6);
+        }
+        if (rocket2 != null) {
+            gc.setFill(Color.RED);
+            gc.fillOval(rocket2.getPosition().getxCoord() - 3, rocket2.getPosition().getyCoord() - 3, 6, 6);
         }
     }
 }
