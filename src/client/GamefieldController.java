@@ -36,11 +36,12 @@ public class GamefieldController implements Initializable {
     public Canvas canvas_gamefield;
     public Canvas canvas_player;
     @FXML
+    private Canvas canvas;
+    @FXML
     public Canvas cv_hud;
     @FXML
     public AnchorPane pane;
-    @FXML
-    private Canvas canvas;
+
     private GraphicsContext gc;
     private GraphicsContext hudgc;
 
@@ -276,7 +277,8 @@ public class GamefieldController implements Initializable {
                     angle360 = (180 - (curAngle * -1)) + 180;
                     a = Math.sin(Math.toRadians(angle360)) * 50;
                     b = Math.cos(Math.toRadians(angle360)) * 50;
-                } else {
+                }
+                else{
                     b = 50;
                 }
                 gc.setFill(Color.BLACK);

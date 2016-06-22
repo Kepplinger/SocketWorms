@@ -4,8 +4,6 @@ import java.io.Serializable;
 
 /**
  * Created by Kepplinger on 24.05.2016.
- *
- * Einfach ein Punkt.
  */
 public class Point implements Serializable {
 

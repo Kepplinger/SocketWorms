@@ -31,82 +31,70 @@ public class ClientModel extends Observable {
     private List<Rocket> rockets;
     private GameWorld world;
 
-    private int worldRequest = 32;
-    private Socket csocket = null;
+    int worldRequest = 32;
 
     private ClientModel() {
         otherPlayers = new LinkedList<>();
         rockets = new LinkedList<>();
 
-        try {
+        Timer t = new Timer(true);
+        t.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
 
-            csocket = new Socket();
-            csocket.connect(new InetSocketAddress(getServerIP(), 7918), 10000);
+                Socket csocket = null;
+                try {
+                    //System.out.println("Neue Datenabfrage");
+                    if (getServerIP() != null) {
+                        csocket = new Socket();
+                        csocket.connect(new InetSocketAddress(getServerIP(), 7918), 10000);
+                        ObjectOutputStream out = new ObjectOutputStream(csocket.getOutputStream());
 
-            Timer t = new Timer(true);
-            t.scheduleAtFixedRate(new TimerTask() {
-                @Override
-                public void run() {
-//
-                    try {
+                        synchronized (otherPlayers) {
 
-                        if (csocket == null || csocket.isClosed()){
-                            csocket.connect(new InetSocketAddress(getServerIP(), 7918), 10000);
-                        }
+                            if (world == null && otherPlayers.size() == 0 || worldRequest == 0) {
+                                out.writeObject(UpdateInformation.World_a_Player);
+                            } else if (world == null) {
+                                out.writeObject(UpdateInformation.World);
+                            } else {
+                                out.writeObject(UpdateInformation.Player);
+                            }
+                            ObjectInputStream in = new ObjectInputStream(csocket.getInputStream());
 
-                        //System.out.println("Neue Datenabfrage");
-                        if (getServerIP() != null) {
-                            double initial = System.nanoTime();
+                            Package p = (Package) in.readObject();
+                            if (p.getWorld() != null)
+                                world = p.getWorld();
+                            if (p.getCurrentPlayer() != null)
+                                currentPlayer = p.getCurrentPlayer();
+                            otherPlayers = p.updatePlayerList(otherPlayers);
 
-                            System.out.println(System.nanoTime() - initial);
-                            ObjectOutputStream out = new ObjectOutputStream(csocket.getOutputStream());
-
-                            synchronized (otherPlayers) {
-
-                                if (world == null && otherPlayers.size() == 0 || worldRequest == 0) {
-                                    out.writeObject(UpdateInformation.World_a_Player);
-                                } else if (world == null) {
-                                    out.writeObject(UpdateInformation.World);
-                                } else {
-                                    out.writeObject(UpdateInformation.Player);
-                                }
-                                ObjectInputStream in = new ObjectInputStream(csocket.getInputStream());
-
-                                Package p = (Package) in.readObject();
-                                if (p.getWorld() != null)
-                                    world = p.getWorld();
-                                if (p.getCurrentPlayer() != null)
-                                    currentPlayer = p.getCurrentPlayer();
-                                otherPlayers = p.getPlayers();
-
-                                if (otherPlayers != null && otherPlayers.size() > 0 && otherPlayers.contains(localPlayer)) {
-                                    localPlayer = otherPlayers.get(otherPlayers.indexOf(localPlayer));
-                                    otherPlayers.remove(otherPlayers.indexOf(localPlayer));
-                                    if (localPlayer.equals(currentPlayer)) {
-                                        sendData();
-                                    }
-                                } else {
+                            if (otherPlayers != null && otherPlayers.size() > 0 && otherPlayers.contains(localPlayer)) {
+                                localPlayer = otherPlayers.get(otherPlayers.indexOf(localPlayer));
+                                otherPlayers.remove(otherPlayers.indexOf(localPlayer));
+                                if(localPlayer.equals(currentPlayer)){
+                                    csocket.close();
                                     sendData();
                                 }
+                            } else {
+                                csocket.close();
+                                sendData();
                             }
-                            //System.out.println("[Client] Daten empfangen.");
                         }
-                    } catch (ConnectException e) {
-                        System.out.println("[C] Verbindung verloren!");
-                    } catch (IOException ex) {
-                        ex.printStackTrace();
-                    } catch (ClassNotFoundException e) {
-                        e.printStackTrace();
+                        //System.out.println("[Client] Daten empfangen.");
                     }
-                    worldRequest--;
-                    if (worldRequest < 0)
-                        worldRequest = 32;
+                } catch (ConnectException e) {
+                    System.out.println("[C] Verbindung verloren!");
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
                 }
-            }, 0, 20);
+                worldRequest--;
+                if(worldRequest<0)
+                    worldRequest = 32;
+            }
+        }, 0, 20);
 
-        } catch (Exception ex) {
-            new Alert(Alert.AlertType.ERROR,"Master Caution!!!!").showAndWait();
-        }
     }
 
 
