@@ -86,7 +86,8 @@ public class LoginController implements Initializable{
             }
         }
         else if (event.isControlDown() && event.getCode() == KeyCode.P) {
-            iv_skin.setImage(new Image("/images/worms/RPremium.png"));
+            skinID = 99;
+            nextSkin(null);
         }
     }
 
@@ -139,7 +140,9 @@ public class LoginController implements Initializable{
     public void nextSkin(ActionEvent actionEvent) {
         skinID++;
         if(skinID>=Player.WORM_SKINS){
-           skinID = 0;
+            if (skinID != 100) {
+                skinID = 0;
+            }
         }
         iv_skin.setImage(new Image(String.format("/images/worms/Rworm%d.png", skinID)));
     }

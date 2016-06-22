@@ -85,33 +85,35 @@ public class ServerModel {
                             Object receivedP = in.readObject();
 
                             ObjectOutputStream out = new ObjectOutputStream(csocket.getOutputStream());
-                            if (receivedP instanceof UpdateInformation) {
-                                //TODO
-                                //Client will Daten
-                                if (receivedP.equals(UpdateInformation.Player)) {
-                                    out.writeObject(new Package(state.getInfo(),changedPlayers(), null, currentPlayer));
-                                } else if (receivedP.equals(UpdateInformation.World)) {
-                                    out.writeObject(new Package(state.getInfo(),null, world, currentPlayer));
-                                } else if (receivedP.equals(UpdateInformation.World_a_Player)) {
-                                    out.writeObject(new Package(state.getInfo(),changedPlayers(), world, currentPlayer));
-                                }
-                            } else if (receivedP instanceof Player) {
-                                //Client schickt Daten
-                                Player pCL = (Player) receivedP;
-                                if (players.contains(pCL)) {
-                                    if (pCL.equals(currentPlayer)) {
-                                        currentPlayer = pCL;
-                                        currentShoot = pCL.getShoot();
-                                        players.set(players.indexOf(pCL), pCL);
-                                        //System.out.println(players.get(players.indexOf(pCL))); //Gesendeter Spieler
+                            if (receivedP != null) {
+                                if (receivedP instanceof UpdateInformation) {
+                                    //TODO
+                                    //Client will Daten
+                                    if (receivedP.equals(UpdateInformation.Player)) {
+                                        out.writeObject(new Package(state.getInfo(), changedPlayers(), null, currentPlayer));
+                                    } else if (receivedP.equals(UpdateInformation.World)) {
+                                        out.writeObject(new Package(state.getInfo(), null, world, currentPlayer));
+                                    } else if (receivedP.equals(UpdateInformation.World_a_Player)) {
+                                        out.writeObject(new Package(state.getInfo(), changedPlayers(), world, currentPlayer));
+                                    }
+                                } else if (receivedP instanceof Player) {
+                                    //Client schickt Daten
+                                    Player pCL = (Player) receivedP;
+                                    if (players.contains(pCL)) {
+                                        if (pCL.equals(currentPlayer)) {
+                                            currentPlayer = pCL;
+                                            currentShoot = pCL.getShoot();
+                                            players.set(players.indexOf(pCL), pCL);
+                                            //System.out.println(players.get(players.indexOf(pCL))); //Gesendeter Spieler
+                                        }
+                                    } else {
+                                        System.out.println("[Server] Der Spieler ist nicht vorhanden!");
+                                        System.out.println(pCL.getName() + " ist dem Spiel beigetreten.");
+                                        state.join(pCL);
                                     }
                                 } else {
-                                    System.out.println("[Server] Der Spieler ist nicht vorhanden!");
-                                    System.out.println(pCL.getName() +" ist dem Spiel beigetreten.");
-                                    state.join(pCL);
+                                    System.out.println("Unidentifiable message from Client");
                                 }
-                            } else {
-                                System.out.println("Unidentifiable message from Client");
                             }
                         } catch (IOException ex) {
                             ex.printStackTrace();

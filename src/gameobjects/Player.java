@@ -153,9 +153,12 @@ public class Player implements Serializable {
     }
 
     public void setWormSkin(int wormSkin) {
-        if (wormSkin >= WORM_SKINS)
+        if (wormSkin == 100) {
+            this.wormSkin = 100;
+        }
+        else if (wormSkin >= WORM_SKINS)
             throw new IllegalArgumentException(String.format("Es gibt nur [%d] Skins. Erhaltener Wert: %d", WORM_SKINS, wormSkin));
-        if (wormSkin < 0)
+        else if (wormSkin < 0)
             throw new IllegalArgumentException(String.format("Negativer Wert. Erhaltener Wert: %d", wormSkin));
         this.wormSkin = wormSkin;
     }
