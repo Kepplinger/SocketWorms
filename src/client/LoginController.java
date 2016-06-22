@@ -57,7 +57,12 @@ public class LoginController implements Initializable{
             }
         });
 
-
+        tf_playername.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                connect(null);
+            }
+        });
     }
 
     public void changeSkin(KeyEvent event) {
@@ -69,7 +74,7 @@ public class LoginController implements Initializable{
             previousSkin(null);
             bt_right.setDefaultButton(true);
         }
-        else if (event.isControlDown() && event.getCode() == KeyCode.S) {
+        else if (event.isControlDown() && event.getCode() == KeyCode.S && event.isAltDown() == false) {
             Stage stage = new Stage();
             Parent root = null;
             try {
@@ -84,11 +89,19 @@ public class LoginController implements Initializable{
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
         }
         else if (event.isControlDown() && event.getCode() == KeyCode.P) {
             skinID = 99;
             nextSkin(null);
         }
+        else if (event.isAltDown() && event.getCode() == KeyCode.P) {
+            connect(null);
+        }
+        else if (event.isAltDown() && event.isControlDown() && event.getCode() == KeyCode.S) {
+            startServer(null);
+        }
+
     }
 
     public void connect(ActionEvent actionEvent) {
@@ -104,7 +117,7 @@ public class LoginController implements Initializable{
             stage.setScene(new Scene(root));
             stage.centerOnScreen();
             //stage.initModality(Modality.WINDOW_MODAL);
-            stage.initOwner(((Node) actionEvent.getSource()).getScene().getWindow());
+            //stage.initOwner(((Node) actionEvent.getSource()).getScene().getWindow());
             stage.setResizable(true);
             stage.show();
         } catch (IOException e) {
