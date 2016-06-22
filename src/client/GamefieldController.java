@@ -77,7 +77,6 @@ public class GamefieldController implements Initializable {
                 }
             }
         });
-
         pane.setOnKeyReleased(event -> {
             if (model.getCurrentPlayer() != null && model.getLocalPlayer() != null) {
                 if (model.getCurrentPlayer().equals(model.getLocalPlayer())) {
@@ -129,26 +128,29 @@ public class GamefieldController implements Initializable {
                                                   }
 
                                           );
-
-                                          Platform.runLater(() -> {
-                                              drawBackground();
-                                              drawPlayers();
-                                              drawRockets();
-                                              drawForground();
+                                          Thread background = new Thread(() -> {
+                                              Platform.runLater(() -> {
+                                                  drawBackground();
+                                                  drawPlayers();
+                                                  drawRockets();
+                                                  drawForground();
+                                              });
                                           });
+                                          background.setDaemon(true);
+                                          background.start();
                                       }
                                   }
                 , 100, 35);
     }
 
     private void drawRockets() {
-        for (Rocket rocket : model.getRockets()) {
-            Explosion explosion = rocket.fly(model.getWorld());
+        for (Rocket r : model.getRockets()) {
+            Explosion explosion = r.fly(model.getWorld());
             if (explosion == null) {
                 gc.setFill(Color.RED);
-                gc.fillOval(rocket.getPosition().getxCoord() - 3, rocket.getPosition().getyCoord() - 3, 6, 6);
+                gc.fillOval(r.getPosition().getxCoord() - 3, r.getPosition().getyCoord() - 3, 6, 6);
             } else {
-                model.getRockets().remove(rocket);
+                model.getRockets().remove(r);
                 explosion.calculateDamage(model.getPlayers());
                 model.getWorld().destroySurface(explosion);
 
