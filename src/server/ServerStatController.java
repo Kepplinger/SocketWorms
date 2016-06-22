@@ -36,7 +36,9 @@ public class ServerStatController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         model = ServerModel.getInstance();
         final boolean[] end = new boolean[1];
-        
+
+
+
         Timer t = new Timer(true);
         t.scheduleAtFixedRate(new TimerTask() {
             @Override
@@ -73,10 +75,20 @@ public class ServerStatController implements Initializable {
                         lv_tB.getItems().clear();
                         for(Player p:model.getPlayers()){
                             if(p.getTeam().equals("A")){
-                                lv_tA.getItems().add(p.getName());
+                                int ix = 30 - (p.getName().length() + 7);
+                                String space = "";
+                                for (int i = 0; i < ix; i++) {
+                                    space = space + " ";
+                                }
+                                lv_tA.getItems().add(String.format("%s" + space + "%d",p.getName(), p.getHealth()));
                             }
                             else {
-                                lv_tB.getItems().add(p.getName());
+                                int ix = 30 - (p.getName().length() + 7);
+                                String space = "";
+                                for (int i = 0; i < ix; i++) {
+                                    space = space + " ";
+                                }
+                                lv_tB.getItems().add(String.format("%s" + space + "%d",p.getName(), p.getHealth()));
                             }
                         }
                     }
