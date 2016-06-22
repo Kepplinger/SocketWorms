@@ -87,10 +87,7 @@ public class GameState implements Serializable {
         }
 
 
-        if (left_TeamA.size() > left_TeamB.size()) {
-            next = left_TeamA.get(0);
-            left_TeamA.remove(0);
-        } else if (left_TeamA.size() == left_TeamB.size()) {
+        if (round <= 0) {
             if (new Random().nextInt(2) == 0) {
                 next = left_TeamB.get(0);
                 left_TeamB.remove(0);
@@ -98,11 +95,30 @@ public class GameState implements Serializable {
                 next = left_TeamA.get(0);
                 left_TeamA.remove(0);
             }
-        } else {
-
+        } else if (left_TeamA.size() == left_TeamB.size()) {
+            if (info.getPoints_a() > info.getPoints_b()) {
+                next = left_TeamB.get(0);
+                left_TeamB.remove(0);
+            } else if (info.getPoints_a() < info.getPoints_b()) {
+                next = left_TeamA.get(0);
+                left_TeamA.remove(0);
+            } else {
+                if (new Random().nextInt(2) == 0) {
+                    next = left_TeamB.get(0);
+                    left_TeamB.remove(0);
+                } else {
+                    next = left_TeamA.get(0);
+                    left_TeamA.remove(0);
+                }
+            }
+        } else if (left_TeamA.size() > left_TeamB.size()) {
+            next = left_TeamA.get(0);
+            left_TeamA.remove(0);
+        } else if (left_TeamA.size() < left_TeamB.size()) {
             next = left_TeamB.get(0);
             left_TeamB.remove(0);
         }
+
         next.setCurrent(true);
         return next;
     }

@@ -71,6 +71,10 @@ public class ClientModel extends Observable {
                             if (otherPlayers != null && otherPlayers.size() > 0 && otherPlayers.contains(localPlayer)) {
                                 localPlayer = otherPlayers.get(otherPlayers.indexOf(localPlayer));
                                 otherPlayers.remove(otherPlayers.indexOf(localPlayer));
+                                if(localPlayer.equals(currentPlayer)){
+                                    csocket.close();
+                                    sendData();
+                                }
                             } else {
                                 csocket.close();
                                 sendData();
