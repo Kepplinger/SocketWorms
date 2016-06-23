@@ -75,20 +75,10 @@ public class ServerStatController implements Initializable {
                         lv_tB.getItems().clear();
                         for(Player p:model.getPlayers()){
                             if(p.getTeam().equals("A")){
-                                int ix = 30 - (p.getName().length() + 7);
-                                String space = "";
-                                for (int i = 0; i < ix; i++) {
-                                    space = space + " ";
-                                }
-                                lv_tA.getItems().add(String.format("%s" + space + "%d",p.getName(), p.getHealth()));
+                                lv_tA.getItems().add(String.format("%20s %10d",p.getName(), p.getHealth()));
                             }
                             else {
-                                int ix = 30 - (p.getName().length() + 7);
-                                String space = "";
-                                for (int i = 0; i < ix; i++) {
-                                    space = space + " ";
-                                }
-                                lv_tB.getItems().add(String.format("%s" + space + "%d",p.getName(), p.getHealth()));
+                                lv_tB.getItems().add(String.format("%20s %10d",p.getName(), p.getHealth()));
                             }
                         }
                     }

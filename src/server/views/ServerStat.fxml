@@ -94,16 +94,20 @@
                               </Label>
                               <HBox alignment="CENTER">
                                  <children>
-                                    <Label text="♥" textFill="#b5200d">
-                                       <font>
-                                          <Font name="System Bold" size="22.0" />
-                                       </font>
-                                    </Label>
-                                    <Label fx:id="lb_health" text="100" textFill="#b5200d">
-                                       <font>
-                                          <Font name="System Bold" size="22.0" />
-                                       </font>
-                                    </Label>
+                                    <HBox alignment="CENTER" prefWidth="100.0" styleClass="scoreboard">
+                                       <children>
+                                          <Label text="♥" textFill="#b5200d">
+                                             <font>
+                                                <Font name="System Bold" size="22.0" />
+                                             </font>
+                                          </Label>
+                                          <Label fx:id="lb_health" text="100" textFill="#b5200d">
+                                             <font>
+                                                <Font name="System Bold" size="22.0" />
+                                             </font>
+                                          </Label>
+                                       </children>
+                                    </HBox>
                                  </children>
                               </HBox>
                            </children>
