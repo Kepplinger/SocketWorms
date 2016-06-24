@@ -82,8 +82,10 @@ public class Rocket {
                 currentPoint.setxCoord((int) currentX);
                 currentPoint.setyCoord((int) currentY);
 
-                if (getDistance(world.getNearestPoint(currentPoint), currentPoint) < 5 || world.containsPoint(currentPoint)) {
-                    return explode(currentPoint);
+                if (getDistance(world.getNearestPoint(currentPoint), currentPoint) < 20) {
+                    if (getDistance(world.getNearestPoint(currentPoint), currentPoint) < 5 || world.containsPoint(currentPoint)) {
+                        return explode(currentPoint);
+                    }
                 }
 
             } while (cnt > 0);
