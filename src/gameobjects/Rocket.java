@@ -39,9 +39,9 @@ public class Rocket {
 
     public Explosion fly(GameWorld world) {
 
-        double intitial;
+        //double intitial;
 
-        double GRAVITATIONAL_CONSTANT = 4;
+        double GRAVITATIONAL_CONSTANT = 8;
 
         double currentX;
         double currentY;
@@ -52,7 +52,7 @@ public class Rocket {
         double cnt;
 
         if (initialY <= 576) {
-            ySpeed = Math.max((ySpeed - GRAVITATIONAL_CONSTANT), -20);
+            ySpeed = Math.max((ySpeed - GRAVITATIONAL_CONSTANT), -500);
             if (xSpeed > 5)
                 xSpeed--;
             if (xSpeed < -5)
@@ -64,7 +64,7 @@ public class Rocket {
             currentX = initialX;
             currentY = initialY;
 
-            intitial = System.nanoTime();
+            //intitial = System.nanoTime();
 
             double moveX = (finalX - initialX) / xSpeed;
             double moveY = (finalY - initialY) / ySpeed;
@@ -82,10 +82,8 @@ public class Rocket {
                 currentPoint.setxCoord((int) currentX);
                 currentPoint.setyCoord((int) currentY);
 
-                if (getDistance(world.getNearestPoint(currentPoint), currentPoint) < 20) {
-                    if (getDistance(world.getNearestPoint(currentPoint), currentPoint) < 5 || world.containsPoint(currentPoint)) {
-                        return explode(currentPoint);
-                    }
+                if (getDistance(world.getNearestPoint(currentPoint), currentPoint) < 5 || world.containsPoint(currentPoint)) {
+                    return explode(currentPoint);
                 }
 
             } while (cnt > 0);
@@ -95,7 +93,7 @@ public class Rocket {
         } else {
             return explode(new Point(initialX, initialY));
         }
-        System.out.println(System.nanoTime() - intitial);
+        //System.out.println(System.nanoTime() - intitial);
         return null;
     }
 

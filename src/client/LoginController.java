@@ -21,13 +21,16 @@ import server.ServerStatController;
 import server.ServerViewController;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.net.URL;
+import java.util.Enumeration;
 import java.util.ResourceBundle;
 
 /**
  * Created by Andreas on 24.05.2016.
  */
-public class LoginController implements Initializable{
+public class LoginController implements Initializable {
     public TextField tf_serverip;
     public TextField tf_playername;
     public VBox mainPane;
@@ -69,19 +72,31 @@ public class LoginController implements Initializable{
         if (event.getCode() == KeyCode.RIGHT) {
             nextSkin(null);
             bt_left.setDefaultButton(true);
-        }
-        else if (event.getCode() == KeyCode.LEFT) {
+        } else if (event.getCode() == KeyCode.LEFT) {
             previousSkin(null);
             bt_right.setDefaultButton(true);
-        }
-        else if (event.isControlDown() && event.getCode() == KeyCode.S && event.isAltDown() == false) {
+        } else if (event.isControlDown() && event.getCode() == KeyCode.S && event.isAltDown() == false) {
             Stage stage = new Stage();
             Parent root = null;
             try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/server/views/ServerStat.fxml"));
                 root = loader.load();
                 ServerStatController controller = loader.getController();
-                stage.setTitle("Server - ["+controller.getModel().getServerIP()+"]");
+
+                String ips = "";
+
+                Enumeration e = NetworkInterface.getNetworkInterfaces();
+                while (e.hasMoreElements()) {
+                    NetworkInterface n = (NetworkInterface) e.nextElement();
+                    Enumeration ee = n.getInetAddresses();
+                    while (ee.hasMoreElements()) {
+                        InetAddress i = (InetAddress) ee.nextElement();
+                        if (!i.getHostAddress().contains(":"))
+                            ips += String.format(" [%s] ", i.getHostAddress());
+                    }
+                }
+
+                stage.setTitle("Server - " + ips + "");
                 stage.setScene(new Scene(root));
                 stage.centerOnScreen();
                 stage.setResizable(true);
@@ -90,22 +105,19 @@ public class LoginController implements Initializable{
                 e.printStackTrace();
             }
 
-        }
-        else if (event.isControlDown() && event.getCode() == KeyCode.P) {
+        } else if (event.isControlDown() && event.getCode() == KeyCode.P) {
             skinID = 99;
             nextSkin(null);
-        }
-        else if (event.isAltDown() && event.getCode() == KeyCode.P) {
+        } else if (event.isAltDown() && event.getCode() == KeyCode.P) {
             connect(null);
-        }
-        else if (event.isAltDown() && event.isControlDown() && event.getCode() == KeyCode.S) {
+        } else if (event.isAltDown() && event.isControlDown() && event.getCode() == KeyCode.S) {
             startServer(null);
         }
 
     }
 
     public void connect(ActionEvent actionEvent) {
-        ClientModel.getInstance().setLocalPlayer(new Player(tf_playername.getText(),skinID));
+        ClientModel.getInstance().setLocalPlayer(new Player(tf_playername.getText(), skinID));
         ClientModel.getInstance().setServerIP(tf_serverip.getText());
         //ClientModel.getInstance().sendData();
 
@@ -113,7 +125,7 @@ public class LoginController implements Initializable{
         Parent root = null;
         try {
             root = FXMLLoader.load(getClass().getResource("view/Gamefield.fxml"));
-            stage.setTitle("WORMS - "+tf_serverip.getText() + " ["+tf_playername.getText()+"]");
+            stage.setTitle("WORMS - " + tf_serverip.getText() + " [" + tf_playername.getText() + "]");
             stage.setScene(new Scene(root));
             stage.centerOnScreen();
             //stage.initModality(Modality.WINDOW_MODAL);
@@ -132,7 +144,7 @@ public class LoginController implements Initializable{
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/server/views/ServerView.fxml"));
             root = loader.load();
             ServerViewController controller = loader.getController();
-            stage.setTitle("Server - ["+controller.getModel().getServerIP()+"]");
+            stage.setTitle("Server - [" + controller.getModel().getServerIP() + "]");
             stage.setScene(new Scene(root));
             stage.centerOnScreen();
             stage.setResizable(true);
@@ -144,15 +156,15 @@ public class LoginController implements Initializable{
 
     public void previousSkin(ActionEvent actionEvent) {
         skinID--;
-        if(skinID<0){
-            skinID = Player.WORM_SKINS-1;
+        if (skinID < 0) {
+            skinID = Player.WORM_SKINS - 1;
         }
-        iv_skin.setImage(new Image(String.format("/images/worms/worm%d.png",skinID)));
+        iv_skin.setImage(new Image(String.format("/images/worms/worm%d.png", skinID)));
     }
 
     public void nextSkin(ActionEvent actionEvent) {
         skinID++;
-        if(skinID>=Player.WORM_SKINS){
+        if (skinID >= Player.WORM_SKINS) {
             if (skinID != 100) {
                 skinID = 0;
             }

@@ -68,12 +68,12 @@ public class ServerModel {
             }
         }, 50, 5);
         Thread serverConnection = new Thread(() -> {
-            state.join(new Player("Sepp"));
+            /*state.join(new Player("Sepp"));
             state.join(new Player("Mehmet"));
             state.join(new Player("Franz"));
             state.join(new Player("Gustav"));
             state.join(new Player("Hans"));
-            state.join(new Player("Günther"));
+            state.join(new Player("Günther"));*/
 
             try {
                 ServerSocket socket = new ServerSocket(7918);
@@ -107,8 +107,8 @@ public class ServerModel {
                                             //System.out.println(players.get(players.indexOf(pCL))); //Gesendeter Spieler
                                         }
                                     } else {
-                                        System.out.println("[Server] Der Spieler ist nicht vorhanden!");
-                                        System.out.println(pCL.getName() + " ist dem Spiel beigetreten.");
+                                        //System.out.println("[Server] Der Spieler ist nicht vorhanden!");
+                                        System.out.println("'"+pCL.getName() + "' ist dem Spiel beigetreten.");
                                         state.join(pCL);
                                     }
                                 } else {
@@ -132,13 +132,13 @@ public class ServerModel {
         serverConnection.setName("ServerConnection-Thread");
         serverConnection.start();
 
-        Timer timer = new Timer(true);
+        /*Timer timer = new Timer(true);
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
                 players.get(new Random().nextInt(players.size())).removeHealth(100);
             }
-        },100,3000);
+        },100,3000);*/
     }
 
     public String getServerIP() {

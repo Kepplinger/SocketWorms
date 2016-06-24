@@ -32,10 +32,13 @@ public class ServerStatController implements Initializable {
 
     ServerModel model;
 
+    private static final int MAX_POINTS = 15;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         model = ServerModel.getInstance();
         final boolean[] end = new boolean[1];
+
 
 
 
@@ -51,12 +54,13 @@ public class ServerStatController implements Initializable {
 
                         lb_dA.setText(String.format("%d", model.getState().getInfo().getCurDeaths_A()));
                         lb_dB.setText(String.format("%d", model.getState().getInfo().getCurDeaths_B()));
-                        if (end[0] != true && model.getState().getInfo().getCurDeaths_A() >= model.getState().getInfo().getPlayer_A_cnt()) {
+
+                        if (model.getState().getInfo().getPoints_a()>=MAX_POINTS) {
                             Alert a = new Alert(Alert.AlertType.INFORMATION, "TEAM B HAS WON", ButtonType.OK);
                             end[0] = true;
                             a.show();
                         }
-                        else if (end[0] != true && model.getState().getInfo().getCurDeaths_B() >= model.getState().getInfo().getPlayer_B_cnt()) {
+                        else if (model.getState().getInfo().getPoints_b()>=MAX_POINTS) {
                             Alert a = new Alert(Alert.AlertType.INFORMATION, "TEAM A HAS WON", ButtonType.OK);
                             end[0] = true;
                             a.show();
