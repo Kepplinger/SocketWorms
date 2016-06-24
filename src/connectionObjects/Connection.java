@@ -1,6 +1,5 @@
 package connectionObjects;
 
-import client.ClientModel;
 import server.ServerModel;
 
 import java.io.IOException;
@@ -28,27 +27,26 @@ public class Connection implements Runnable {
         ObjectOutputStream outputStream = null;
 
         try {
-
             inputStream = new ObjectInputStream(socket.getInputStream());
             outputStream = new ObjectOutputStream(socket.getOutputStream());
-
         } catch (IOException e) {
             e.printStackTrace();
         }
 
 
         while (socket != null) {
+
             try {
+
                 Request request = (Request) inputStream.readObject();
 
                 if (request.getRequestType().equals(RequestType.RETURN_PACKAGE)) {
                     outputStream.writeObject(model.getPackage());
+                    outputStream.reset();
                 }
 
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
+            } catch (Exception ex){
+                System.out.println("Server kann Client nicht mehr finden.");
             }
         }
     }

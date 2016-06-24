@@ -1,32 +1,23 @@
 package client;
 
-import connectionObjects.Package;
-import controller.Painter;
-import gameobjects.*;
-import gameobjects.Point;
+import gameobjects.Explosion;
+import gameobjects.Player;
+import gameobjects.Rocket;
+import gameobjects.Surface;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.ImagePattern;
-import javafx.scene.paint.Paint;
-import javafx.scene.shape.*;
-import javafx.scene.shape.Polygon;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import javafx.scene.transform.Rotate;
 
-import java.awt.*;
-import java.awt.Rectangle;
 import java.net.URL;
 import java.util.*;
-import java.util.List;
 
 /**
  * Created by Andreas on 24.05.2016.
@@ -295,7 +286,7 @@ public class GamefieldController implements Initializable, Observer {
     public void update(Observable o, Object arg) {
         Platform.runLater(() -> {
             drawBackground();
-//            drawPlayers();
+            drawPlayers();
 //            drawRockets();
 //            drawForground();
         });

@@ -1,11 +1,5 @@
 package gameobjects;
 
-import javafx.scene.canvas.GraphicsContext;
-
-import java.util.DoubleSummaryStatistics;
-import java.util.LinkedList;
-import java.util.List;
-
 /**
  * Created by Andreas on 28.05.2016.
  *

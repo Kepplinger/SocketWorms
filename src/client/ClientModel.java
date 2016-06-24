@@ -3,13 +3,14 @@ package client;
 import connectionObjects.Package;
 import connectionObjects.Request;
 import connectionObjects.RequestType;
-import gameobjects.*;
+import gameobjects.GameWorld;
+import gameobjects.Player;
+import gameobjects.Rocket;
 import javafx.scene.control.Alert;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.ConnectException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.*;
@@ -42,48 +43,40 @@ public class ClientModel extends Observable {
             csocket = new Socket();
             csocket.connect(new InetSocketAddress(getServerIP(), 7918), 10000);
 
-            ObjectOutputStream outputStream = new ObjectOutputStream(csocket.getOutputStream());
-            ObjectInputStream inputStream = new ObjectInputStream(csocket.getInputStream());
-
             Timer t = new Timer(true);
             t.scheduleAtFixedRate(new TimerTask() {
+
+                ObjectOutputStream outputStream = new ObjectOutputStream(csocket.getOutputStream());
+                ObjectInputStream inputStream = new ObjectInputStream(csocket.getInputStream());
 
                 @Override
                 public void run() {
 
-                    double initial = System.nanoTime();
                     try {
 
                         if (csocket == null || csocket.isClosed()) {
                             csocket.connect(new InetSocketAddress(getServerIP(), 7918), 10000);
+                            outputStream = new ObjectOutputStream(csocket.getOutputStream());
+                            inputStream = new ObjectInputStream(csocket.getInputStream());
                         }
 
                         outputStream.writeObject(new Request(RequestType.RETURN_PACKAGE));
-                        Package serverPackage = (Package) inputStream.readObject();
+                        outputStream.reset();
 
-                        currentPlayer = serverPackage.getCurrentPlayer();
-                        world = serverPackage.getWorld();
-                        rocket = serverPackage.getRocket();
+                        updateDataFromPackage((Package) inputStream.readObject());
 
                         setChanged();
                         notifyObservers();
 
-                    } catch (ConnectException e) {
-                        System.out.println("[C] Verbindung verloren!");
-                    } catch (IOException ex) {
-                        ex.printStackTrace();
-                    } catch (ClassNotFoundException e) {
-                        e.printStackTrace();
+                    } catch (Exception ex){
+                        System.out.println("Verbindung unterbrochen.");
                     }
-
-                    System.out.println(System.nanoTime() - initial);
                 }
 
             }, 0, 30);
 
-
         } catch (Exception ex) {
-            new Alert(Alert.AlertType.ERROR, "Master Caution!!!!").showAndWait();
+            new Alert(Alert.AlertType.ERROR, "Es is ein Fehler beim Verbinden aufgetreten.").showAndWait();
         }
     }
 
@@ -141,5 +134,13 @@ public class ClientModel extends Observable {
         });
         thread.setDaemon(true);
         thread.start();
+    }
+
+    private void updateDataFromPackage(Package serverPackage){
+        currentPlayer = serverPackage.getCurrentPlayer();
+        otherPlayers = serverPackage.getPlayers();
+        world = serverPackage.getWorld();
+        rocket = serverPackage.getRocket();
+        serverPackage.getInfo();
     }
 }

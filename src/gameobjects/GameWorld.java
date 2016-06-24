@@ -1,11 +1,10 @@
 package gameobjects;
 
-import javafx.scene.shape.Polygon;
-import sun.awt.image.ImageWatched;
-
 import java.io.Serializable;
-import java.util.*;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Random;
 
 /**
  * Created by Kepplinger on 24.05.2016.
@@ -250,9 +249,12 @@ public class GameWorld implements Serializable {
 
     public boolean containsPoint(Point p) {
 
-        for (Surface surface : getGameWorld()) {
-            if (surface.contains(p))
-                return true;
+
+        synchronized (gameWorld) {
+            for (Surface surface : getGameWorld()) {
+                if (surface.contains(p))
+                    return true;
+            }
         }
 
         return false;

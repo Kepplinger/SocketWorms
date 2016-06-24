@@ -53,7 +53,7 @@ public class ServerModel {
                     }
                 }
             }
-        }, 50, 50);
+        }, 50, 30);
 
         Thread serverConnection = new Thread(() -> {
             state.join(new Player("Sepp"));
@@ -68,8 +68,6 @@ public class ServerModel {
                 while (true) {
 
                     Socket csocket = socket.accept();
-
-                    //Insert code here
 
                     Thread clientThread = new Thread(new Connection(csocket, this));
                     clientThread.setDaemon(true);
